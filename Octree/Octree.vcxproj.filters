@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="octreeTest.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="fast_gicp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="fast_vgicp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="lsq_registration.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Comparision.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="graph2d.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="octree_level_voxel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="octree_recur_iter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="plot.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fast_gicp.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fast_gicp_impl.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fast_vgicp.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fast_vgicp_impl.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fast_vgicp_voxel.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="gicp_settings.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="lsq_registration.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="lsq_registration_impl.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="so3\so3.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="graph2d.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
