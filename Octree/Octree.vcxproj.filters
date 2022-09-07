@@ -36,6 +36,9 @@
     <ClCompile Include="graph2d.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="fast_svgicp.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="octree_level_voxel.h">
@@ -75,6 +78,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="graph2d.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fast_svgicp.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fast_svgicp_impl.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

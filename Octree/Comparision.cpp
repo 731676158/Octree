@@ -16,6 +16,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include "fast_vgicp.hpp"
+#include "fast_svgicp.hpp"
 
 #include "octree_recur_iter.h"
 #include "plot.h"
@@ -216,26 +217,32 @@ int main()
 
 	/***********************************滤不滤波吧**************************************************/
 	
-	NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
-	IterativeClosestPoint<PointXYZ, PointXYZ> pcl_icp;
+	//NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
+	//IterativeClosestPoint<PointXYZ, PointXYZ> pcl_icp;
 	fast_gicp::FastVGICP<PointXYZ, PointXYZ> vgicp;
-	GeneralizedIterativeClosestPoint<PointXYZ, PointXYZ> pcl_gicp;
+	fast_gicp::FastSVGICP<PointXYZ, PointXYZ> svgicp;
+	//GeneralizedIterativeClosestPoint<PointXYZ, PointXYZ> pcl_gicp;
 
-	//ndt
-	pcl_ndt.setResolution(1.0);     //注意分辨率
-	pcl_ndt.setMaximumIterations(35);
-	pcl_ndt.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+	////ndt
+	//pcl_ndt.setResolution(1.0);     //注意分辨率
+	//pcl_ndt.setMaximumIterations(35);
+	//pcl_ndt.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
 
 	//vgicp
 	vgicp.setResolution(1.0);     //注意分辨率
-	vgicp.setNumThreads(1);
+	vgicp.setNumThreads(8);
 	vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
 
-	//icp
-	pcl_icp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+	//svgicp
+	svgicp.setResolution(1.0);     //注意分辨率
+	svgicp.setNumThreads(8);
+	svgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
 
-	//gicp
-	pcl_gicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+	////icp
+	//pcl_icp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+
+	////gicp
+	//pcl_gicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
 
 	/***********************************************************************************************/
 
@@ -252,10 +259,11 @@ int main()
 	PointCloud<PointXYZ>::Ptr guessed(new PointCloud<PointXYZ>());
 	pcl::transformPointCloud(*source_pre, *guessed, init_guess);
 
-	res_scts.push_back(pcl_align(pcl_ndt, guessed, target_pre, trans));
+	//res_scts.push_back(pcl_align(pcl_ndt, guessed, target_pre, trans));
 	res_scts.push_back(pcl_align(vgicp, guessed, target_pre, trans));
-	res_scts.push_back(pcl_align(pcl_icp, guessed, target_pre, trans));
-	res_scts.push_back(pcl_align(pcl_gicp, guessed, target_pre, trans));
+	res_scts.push_back(pcl_align(svgicp, guessed, target_pre, trans));
+	//res_scts.push_back(pcl_align(pcl_icp, guessed, target_pre, trans));
+	//res_scts.push_back(pcl_align(pcl_gicp, guessed, target_pre, trans));
 	drawRes(res_scts);
 
 	//Matrix4f trans = Matrix4f::Identity();

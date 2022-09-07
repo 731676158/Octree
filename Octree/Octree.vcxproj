@@ -146,6 +146,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="fast_gicp.cpp" />
+    <ClCompile Include="fast_svgicp.cpp" />
     <ClCompile Include="fast_vgicp.cpp" />
     <ClCompile Include="graph2d.cpp" />
     <ClCompile Include="lsq_registration.cpp" />
@@ -159,6 +160,8 @@
   <ItemGroup>
     <ClInclude Include="fast_gicp.hpp" />
     <ClInclude Include="fast_gicp_impl.hpp" />
+    <ClInclude Include="fast_svgicp.hpp" />
+    <ClInclude Include="fast_svgicp_impl.hpp" />
     <ClInclude Include="fast_vgicp.hpp" />
     <ClInclude Include="fast_vgicp_impl.hpp" />
     <ClInclude Include="fast_vgicp_voxel.hpp" />
