@@ -219,7 +219,7 @@ int main()
 	
 	//NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
 	//IterativeClosestPoint<PointXYZ, PointXYZ> pcl_icp;
-	fast_gicp::FastVGICP<PointXYZ, PointXYZ> vgicp;
+	//fast_gicp::FastVGICP<PointXYZ, PointXYZ> vgicp;
 	fast_gicp::FastSVGICP<PointXYZ, PointXYZ> svgicp;
 	//GeneralizedIterativeClosestPoint<PointXYZ, PointXYZ> pcl_gicp;
 
@@ -228,15 +228,17 @@ int main()
 	//pcl_ndt.setMaximumIterations(35);
 	//pcl_ndt.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
 
-	//vgicp
-	vgicp.setResolution(1.0);     //注意分辨率
-	vgicp.setNumThreads(8);
-	vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+	////vgicp
+	//vgicp.setResolution(1.0);     //注意分辨率
+	//vgicp.setNumThreads(8);
+	//vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+	//vgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
 
 	//svgicp
 	svgicp.setResolution(1.0);     //注意分辨率
 	svgicp.setNumThreads(8);
 	svgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+	//svgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
 
 	////icp
 	//pcl_icp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
@@ -260,7 +262,7 @@ int main()
 	pcl::transformPointCloud(*source_pre, *guessed, init_guess);
 
 	//res_scts.push_back(pcl_align(pcl_ndt, guessed, target_pre, trans));
-	res_scts.push_back(pcl_align(vgicp, guessed, target_pre, trans));
+	//res_scts.push_back(pcl_align(vgicp, guessed, target_pre, trans));
 	res_scts.push_back(pcl_align(svgicp, guessed, target_pre, trans));
 	//res_scts.push_back(pcl_align(pcl_icp, guessed, target_pre, trans));
 	//res_scts.push_back(pcl_align(pcl_gicp, guessed, target_pre, trans));

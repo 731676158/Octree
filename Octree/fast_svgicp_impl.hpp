@@ -85,7 +85,7 @@ void FastSVGICP<PointSource, PointTarget>::computeTransformation(PointCloudSourc
 template <typename PointSource, typename PointTarget>
 void FastSVGICP<PointSource, PointTarget>::update_correspondences(const Eigen::Isometry3d& trans) {
   voxel_correspondences_.clear();
-  offsets = neighbor_offsets(search_method_);
+  auto offsets = neighbor_offsets(search_method_);
 
   std::vector<std::vector<std::pair<int, GaussianVoxel::Ptr>>> corrs(num_threads_);
   for (auto& c : corrs) {
@@ -96,14 +96,20 @@ void FastSVGICP<PointSource, PointTarget>::update_correspondences(const Eigen::I
 #pragma omp parallel for num_threads(num_threads_) schedule(guided, 8)
   for (int i = 0; i < input_->size(); i++) {
     std::pair<Eigen::Vector4d, Eigen::Matrix4d> mean_cov_ = std::make_pair(
-          Eigen::Vector4d(), Eigen::Matrix4d());
+          Eigen::Vector4d::Zero(), Eigen::Matrix4d::Zero());
+    int count_actual = 0;
     for (const auto& offset : offsets) {
       auto source_voxel = source_voxelmap_->lookup_voxel(
           source_voxelmap_->voxel_coord(input_->at(i).getVector4fMap().template cast<double>()) + offset);
-      mean_cov_.first += source_voxel->mean / offsets.size();
-      mean_cov_.second += source_voxel->cov / offsets.size();
+      if (source_voxel != nullptr) {
+        mean_cov_.first += source_voxel->mean;
+        mean_cov_.second += source_voxel->cov;
+        ++count_actual;
+      }
     }
-    source_mean_cov_[i]=mean_cov_;
+    mean_cov_.first /= count_actual;
+    mean_cov_.second /= count_actual;
+    source_mean_cov_.push_back(mean_cov_);
 
     Eigen::Vector4d transed_mean_A = trans * mean_cov_.first;
     Eigen::Vector3i source_coord = source_voxelmap_->voxel_coord(mean_cov_.first);

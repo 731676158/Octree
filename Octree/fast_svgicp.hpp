@@ -78,8 +78,6 @@ protected:
   NeighborSearchMethod search_method_;
   VoxelAccumulationMode voxel_mode_;
 
-  std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>> offsets;
-
   std::unique_ptr<GaussianVoxelMap<PointSource>> source_voxelmap_;
   std::unique_ptr<GaussianVoxelMap<PointTarget>> target_voxelmap_;
 
