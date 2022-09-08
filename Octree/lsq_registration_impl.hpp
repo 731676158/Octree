@@ -72,6 +72,10 @@ void LsqRegistration<PointTarget, PointSource>::computeTransformation(PointCloud
     }
 
     converged_ = is_converged(delta);
+    if (converged_) {
+      std::pair<float, float> res = get_converged_delta(delta);
+      std::cout << "Converged result: Rotation delta: " << res.first << " Transform delta: " << res.second << std::endl;
+    }
   }
 
   final_transformation_ = x0.cast<float>().matrix();
@@ -169,6 +173,18 @@ bool LsqRegistration<PointTarget, PointSource>::step_lm(Eigen::Isometry3d& x0, E
   }
 
   return false;
+}
+
+template <typename PointTarget, typename PointSource>
+std::pair<float, float> LsqRegistration<PointTarget, PointSource>::get_converged_delta(const Eigen::Isometry3d& delta) {
+  double accum = 0.0;
+  Eigen::Matrix3d R = delta.linear() - Eigen::Matrix3d::Identity();
+  Eigen::Vector3d t = delta.translation();
+
+  Eigen::Matrix3d r_delta = 1.0 / rotation_epsilon_ * R.array().abs();
+  Eigen::Vector3d t_delta = 1.0 / transformation_epsilon_ * t.array().abs();
+
+  return std::make_pair(r_delta.maxCoeff(), t_delta.maxCoeff());
 }
 
 }  // namespace fast_gicp

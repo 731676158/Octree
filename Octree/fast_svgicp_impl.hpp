@@ -21,7 +21,8 @@ template <typename PointSource, typename PointTarget>
 FastSVGICP<PointSource, PointTarget>::FastSVGICP() : FastGICP<PointSource, PointTarget>() {
   this->reg_name_ = "FastVGICP";
 
-  voxel_resolution_ = 1.0;
+  source_voxel_resolution_ = 1.0;
+  target_voxel_resolution_ = 1.0;
   search_method_ = NeighborSearchMethod::DIRECT1;
   voxel_mode_ = VoxelAccumulationMode::ADDITIVE;
 }
@@ -30,8 +31,13 @@ template <typename PointSource, typename PointTarget>
 FastSVGICP<PointSource, PointTarget>::~FastSVGICP() {}
 
 template <typename PointSource, typename PointTarget>
-void FastSVGICP<PointSource, PointTarget>::setResolution(double resolution) {
-  voxel_resolution_ = resolution;
+void FastSVGICP<PointSource, PointTarget>::setSourceResolution(double resolution) {
+  source_voxel_resolution_ = resolution;
+}
+
+template <typename PointSource, typename PointTarget>
+void FastSVGICP<PointSource, PointTarget>::setTargetResolution(double resolution) {
+  target_voxel_resolution_ = resolution;
 }
 
 template <typename PointSource, typename PointTarget>
@@ -95,12 +101,16 @@ void FastSVGICP<PointSource, PointTarget>::update_correspondences(const Eigen::I
 
 #pragma omp parallel for num_threads(num_threads_) schedule(guided, 8)
   for (int i = 0; i < input_->size(); i++) {
+    /*auto source_coord = source_voxelmap_->voxel_coord(input_->at(i).getVector4fMap().template cast<double>());
+    auto source_voxel = source_voxelmap_->lookup_voxel(source_coord);
+    if (source_voxel->being_searched == true) continue;
+    else source_voxel->being_searched = true;*/
     std::pair<Eigen::Vector4d, Eigen::Matrix4d> mean_cov_ = std::make_pair(
           Eigen::Vector4d::Zero(), Eigen::Matrix4d::Zero());
     int count_actual = 0;
     for (const auto& offset : offsets) {
-      auto source_voxel = source_voxelmap_->lookup_voxel(
-          source_voxelmap_->voxel_coord(input_->at(i).getVector4fMap().template cast<double>()) + offset);
+      auto source_voxel= source_voxelmap_->lookup_voxel(source_voxelmap_->voxel_coord(input_->at(i).getVector4fMap().template cast<double>()) + offset);
+      //source_voxel = source_voxelmap_->lookup_voxel(source_coord + offset);
       if (source_voxel != nullptr) {
         mean_cov_.first += source_voxel->mean;
         mean_cov_.second += source_voxel->cov;
@@ -112,7 +122,6 @@ void FastSVGICP<PointSource, PointTarget>::update_correspondences(const Eigen::I
     source_mean_cov_.push_back(mean_cov_);
 
     Eigen::Vector4d transed_mean_A = trans * mean_cov_.first;
-    Eigen::Vector3i source_coord = source_voxelmap_->voxel_coord(mean_cov_.first);
     Eigen::Vector3i target_coord = target_voxelmap_->voxel_coord(transed_mean_A);
 
     for (const auto& offset : offsets) {
@@ -148,12 +157,12 @@ void FastSVGICP<PointSource, PointTarget>::update_correspondences(const Eigen::I
 template <typename PointSource, typename PointTarget>
 double FastSVGICP<PointSource, PointTarget>::linearize(const Eigen::Isometry3d& trans, Eigen::Matrix<double, 6, 6>* H, Eigen::Matrix<double, 6, 1>* b) {
   if (source_voxelmap_ == nullptr) {
-    source_voxelmap_.reset(new GaussianVoxelMap<PointSource>(voxel_resolution_, voxel_mode_));
+    source_voxelmap_.reset(new GaussianVoxelMap<PointSource>(source_voxel_resolution_, voxel_mode_));
     source_voxelmap_->create_voxelmap(*input_, source_covs_);
   }
   
   if (target_voxelmap_ == nullptr) {
-    target_voxelmap_.reset(new GaussianVoxelMap<PointTarget>(voxel_resolution_, voxel_mode_));
+    target_voxelmap_.reset(new GaussianVoxelMap<PointTarget>(target_voxel_resolution_, voxel_mode_));
     target_voxelmap_->create_voxelmap(*target_, target_covs_);
   }
 

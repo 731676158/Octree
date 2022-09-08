@@ -59,7 +59,8 @@ public:
   FastSVGICP();
   virtual ~FastSVGICP() override;
 
-  void setResolution(double resolution);
+  void setSourceResolution(double resolution);
+  void setTargetResolution(double resolution);
   void setVoxelAccumulationMode(VoxelAccumulationMode mode);
   void setNeighborSearchMethod(NeighborSearchMethod method);
 
@@ -74,7 +75,8 @@ protected:
   virtual double compute_error(const Eigen::Isometry3d& trans) override;
 
 protected:
-  double voxel_resolution_;
+  double source_voxel_resolution_;
+  double target_voxel_resolution_;
   NeighborSearchMethod search_method_;
   VoxelAccumulationMode voxel_mode_;
 

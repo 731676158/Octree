@@ -53,6 +53,7 @@ public:
   void setDebugPrint(bool lm_debug_print);
 
   const Eigen::Matrix<double, 6, 6>& getFinalHessian() const;
+  inline double getRotationEpsilon() { return (rotation_epsilon_); }
 
   double evaluateCost(const Eigen::Matrix4f& relative_pose, Eigen::Matrix<double, 6, 6>* H = nullptr, Eigen::Matrix<double, 6, 1>* b = nullptr);
 
@@ -64,6 +65,7 @@ protected:
   virtual void computeTransformation(PointCloudSource& output, const Matrix4& guess) override;
 
   bool is_converged(const Eigen::Isometry3d& delta) const;
+  std::pair<float, float> get_converged_delta(const Eigen::Isometry3d& delta);
 
   virtual double linearize(const Eigen::Isometry3d& trans, Eigen::Matrix<double, 6, 6>* H = nullptr, Eigen::Matrix<double, 6, 1>* b = nullptr) = 0;
   virtual double compute_error(const Eigen::Isometry3d& trans) = 0;

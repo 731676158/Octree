@@ -183,12 +183,12 @@ int main()
 	/*********************************点云读取与滤波*********************************************/
 
 	string sourcefile, targetfile;
-	sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan2.pcd";
-	targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan1.pcd";
-	//sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\source.pcd";
-	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\target.pcd";
-	//sourcefile = "D:\\这几天的乱七八糟\\一组50个\\test1.pcd";
-	//targetfile = "D:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";
+	//sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan2.pcd";
+	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan1.pcd";
+	//sourcefile = "c:\\files\\point_cloud\\codes\\prt\\lectureprt\\treesandknn\\octree\\room_scan\\source.pcd";
+	//targetfile = "c:\\files\\point_cloud\\codes\\prt\\lectureprt\\treesandknn\\octree\\room_scan\\target.pcd";
+	sourcefile = "D:\\这几天的乱七八糟\\一组50个\\test1.pcd";
+	targetfile = "D:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";
 
 	PointCloud<PointXYZ>::Ptr source_pre(new PointCloud<PointXYZ>());
 	PointCloud<PointXYZ>::Ptr target_pre(new PointCloud<PointXYZ>());
@@ -219,7 +219,7 @@ int main()
 	
 	//NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
 	//IterativeClosestPoint<PointXYZ, PointXYZ> pcl_icp;
-	//fast_gicp::FastVGICP<PointXYZ, PointXYZ> vgicp;
+	fast_gicp::FastVGICP<PointXYZ, PointXYZ> vgicp;
 	fast_gicp::FastSVGICP<PointXYZ, PointXYZ> svgicp;
 	//GeneralizedIterativeClosestPoint<PointXYZ, PointXYZ> pcl_gicp;
 
@@ -228,17 +228,19 @@ int main()
 	//pcl_ndt.setMaximumIterations(35);
 	//pcl_ndt.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
 
-	////vgicp
-	//vgicp.setResolution(1.0);     //注意分辨率
-	//vgicp.setNumThreads(8);
-	//vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
-	//vgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
+	//vgicp
+	vgicp.setResolution(1.0);     //注意分辨率
+	vgicp.setNumThreads(8);
+	vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+	vgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
 
 	//svgicp
-	svgicp.setResolution(1.0);     //注意分辨率
+	svgicp.setSourceResolution(0.01);
+	svgicp.setTargetResolution(1.0);     //注意分辨率
 	svgicp.setNumThreads(8);
 	svgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
-	//svgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
+	svgicp.setRotationEpsilon(0.001);
+	svgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
 
 	////icp
 	//pcl_icp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
@@ -253,17 +255,17 @@ int main()
 
 	Matrix4f trans = Matrix4f::Identity();
 
-	//添加位姿估计
-	AngleAxisf init_rotation(0.6931, Vector3f::UnitZ());
-	Translation3f init_translation(1.79387, 0.720047, 0);
-	Matrix4f init_guess = (init_translation * init_rotation).matrix();
+	////添加位姿估计
+	//AngleAxisf init_rotation(0.6931, Vector3f::UnitZ());
+	//Translation3f init_translation(1.79387, 0.720047, 0);
+	//Matrix4f init_guess = (init_translation * init_rotation).matrix();
 
-	PointCloud<PointXYZ>::Ptr guessed(new PointCloud<PointXYZ>());
-	pcl::transformPointCloud(*source_pre, *guessed, init_guess);
+	//PointCloud<PointXYZ>::Ptr guessed(new PointCloud<PointXYZ>());
+	//pcl::transformPointCloud(*source_pre, *guessed, init_guess);
 
 	//res_scts.push_back(pcl_align(pcl_ndt, guessed, target_pre, trans));
-	//res_scts.push_back(pcl_align(vgicp, guessed, target_pre, trans));
-	res_scts.push_back(pcl_align(svgicp, guessed, target_pre, trans));
+	res_scts.push_back(pcl_align(vgicp, source_pre, target_pre, trans));
+	res_scts.push_back(pcl_align(svgicp, source_pre, target_pre, trans));
 	//res_scts.push_back(pcl_align(pcl_icp, guessed, target_pre, trans));
 	//res_scts.push_back(pcl_align(pcl_gicp, guessed, target_pre, trans));
 	drawRes(res_scts);

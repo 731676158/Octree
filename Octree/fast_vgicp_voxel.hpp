@@ -63,6 +63,7 @@ public:
     num_points = 0;
     mean.setZero();
     cov.setZero();
+    being_searched = false;
   }
   virtual ~GaussianVoxel() {}
 
@@ -74,6 +75,7 @@ public:
   int num_points;
   Eigen::Vector4d mean;
   Eigen::Matrix4d cov;
+  bool being_searched;
 };
 
 struct MultiplicativeGaussianVoxel : GaussianVoxel {
