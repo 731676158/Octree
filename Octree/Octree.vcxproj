@@ -65,8 +65,8 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\..\..\software\pcl\pcl_10.0.1.props" />
-    <Import Project="..\..\..\..\..\software\pcl10.0\pcl_10.0.1.props" />
+    <Import Project="..\3rdparty\pcl10.0\pcl_10.0.1.props" />
+    <!-- Import Project="..\..\..\..\..\..\..\..\software\pcl\pcl_10.0.1.props" / -->
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
