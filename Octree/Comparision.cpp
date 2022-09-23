@@ -187,8 +187,8 @@ int main()
 	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan1.pcd";
 	//sourcefile = "c:\\files\\point_cloud\\codes\\prt\\lectureprt\\treesandknn\\octree\\room_scan\\source.pcd";
 	//targetfile = "c:\\files\\point_cloud\\codes\\prt\\lectureprt\\treesandknn\\octree\\room_scan\\target.pcd";
-	sourcefile = "D:\\这几天的乱七八糟\\一组50个\\test1.pcd";
-	targetfile = "D:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";
+	sourcefile = "E:\\这几天的乱七八糟\\一组50个\\test1.pcd";
+	targetfile = "E:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";
 
 	PointCloud<PointXYZ>::Ptr source_pre(new PointCloud<PointXYZ>());
 	PointCloud<PointXYZ>::Ptr target_pre(new PointCloud<PointXYZ>());
