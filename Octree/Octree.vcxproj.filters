@@ -39,6 +39,9 @@
     <ClCompile Include="fast_svgicp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="kitti_bin_to_pcd.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="octree_level_voxel.h">
