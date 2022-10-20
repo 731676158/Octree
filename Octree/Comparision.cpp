@@ -4,8 +4,8 @@
 #include <string>
 #include <chrono>
 #include <thread>
-#include <algorithm>
 #include <Eigen/Dense>
+#include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/octree/octree_pointcloud_voxelcentroid.h>
 #include <pcl/point_types.h>
@@ -40,6 +40,19 @@ using namespace Eigen;
 
 
 int reg_times = 0;
+
+//展示点云基本信息
+void CloudMessages(const PointCloud<PointXYZ>::ConstPtr& cloud) {
+	Eigen::Vector4f min_pt = Eigen::Vector4f::Zero();
+	Eigen::Vector4f max_pt = Eigen::Vector4f::Zero();
+	getMinMax3D<PointXYZ>(*cloud, min_pt, max_pt);
+	cout << "Bound for the cloud: " << endl;
+	cout << "x: [" << min_pt[0] << ", " << max_pt[0] << "];" << endl;
+	cout << "y: [" << min_pt[1] << ", " << max_pt[1] << "];" << endl;
+	cout << "z: [" << min_pt[2] << ", " << max_pt[2] << "];" << endl;
+	cout << "Loaded " << cloud->width * cloud->height << " points." << endl;
+}
+
 
 void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<PointXYZ>::ConstPtr& target)
 {
@@ -214,8 +227,21 @@ int main()
 	double ds = duration_cast<nanoseconds>(t2 - t1).count() / 1e9;
 	double dt = duration_cast<nanoseconds>(t3 - t2).count() / 1e9;
 
-	cout << "Loaded " << source_pre->width * source_pre->height << " source points and " << target_pre->width * target_pre->height << " target points." << endl;
-	cout << "Source time: " << ds << " sec. Target time: " << dt << " sec." << endl;
+	cout << "Source load time: " << ds << " sec.\n Target load time: " << dt << " sec." << endl;
+	cout << "---source cloud messages: " << endl;
+	CloudMessages(source_pre);
+	cout << "---target cloud messages: " << endl;
+	CloudMessages(target_pre);
+
+	float res[3] = {0.1, 0.1, 0.1};
+	voxel_sample(source_pre, source_pre, res);
+	voxel_sample(target_pre, target_pre, res);
+
+	cout << "-------------After filtering" << endl;
+	cout << "---source cloud messages: " << endl;
+	CloudMessages(source_pre);
+	cout << "---target cloud messages: " << endl;
+	CloudMessages(target_pre);
 
 	/***********************************滤不滤波吧**************************************************/
 	
