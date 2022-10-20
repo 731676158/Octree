@@ -187,8 +187,10 @@ int main()
 	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan1.pcd";
 	//sourcefile = "c:\\files\\point_cloud\\codes\\prt\\lectureprt\\treesandknn\\octree\\room_scan\\source.pcd";
 	//targetfile = "c:\\files\\point_cloud\\codes\\prt\\lectureprt\\treesandknn\\octree\\room_scan\\target.pcd";
-	sourcefile = "E:\\这几天的乱七八糟\\一组50个\\test1.pcd";
-	targetfile = "E:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";
+	/*sourcefile = "E:\\这几天的乱七八糟\\一组50个\\test1.pcd";
+	targetfile = "E:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";*/
+	sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000001.pcd";
+	targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000002.pcd";
 
 	PointCloud<PointXYZ>::Ptr source_pre(new PointCloud<PointXYZ>());
 	PointCloud<PointXYZ>::Ptr target_pre(new PointCloud<PointXYZ>());
@@ -232,15 +234,15 @@ int main()
 	vgicp.setResolution(1.0);     //注意分辨率
 	vgicp.setNumThreads(8);
 	vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
-	vgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
+	//vgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
 
 	//svgicp
-	svgicp.setSourceResolution(0.01);
+	svgicp.setSourceResolution(0.1);
 	svgicp.setTargetResolution(1.0);     //注意分辨率
 	svgicp.setNumThreads(8);
 	svgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
 	svgicp.setRotationEpsilon(0.001);
-	svgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
+	//svgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
 
 	////icp
 	//pcl_icp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧

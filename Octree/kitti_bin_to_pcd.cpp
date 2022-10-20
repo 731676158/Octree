@@ -50,8 +50,8 @@ int main(int argc, char** argv) {
 	//// Process options.
 	//po::notify(vm);
 
-	string infile{ "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000000.bin" };
-	string outfile{ "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000000.pcd" };
+	string infile{ "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000002.bin" };
+	string outfile{ "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000002.pcd" };
 
 	// load point cloud
 	fstream input(infile.c_str(), ios::in | ios::binary);
