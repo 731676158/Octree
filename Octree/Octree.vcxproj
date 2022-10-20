@@ -150,7 +150,9 @@
     <ClCompile Include="fast_svgicp.cpp" />
     <ClCompile Include="fast_vgicp.cpp" />
     <ClCompile Include="graph2d.cpp" />
-    <ClCompile Include="kitti_bin_to_pcd.cpp" />
+    <ClCompile Include="kitti_bin_to_pcd.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="lsq_registration.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
