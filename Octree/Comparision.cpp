@@ -90,7 +90,7 @@ void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointX
 	voxelgrid.filter(*filted);
 }
 
-//ndt配准
+//配准
 template<typename Registration>
 pair<double, double> pcl_align(Registration& reg, const PointCloud<PointXYZ>::ConstPtr& source,
 	const PointCloud<PointXYZ>::ConstPtr& target, Matrix4f trans)
@@ -202,8 +202,10 @@ int main()
 	//targetfile = "c:\\files\\point_cloud\\codes\\prt\\lectureprt\\treesandknn\\octree\\room_scan\\target.pcd";
 	/*sourcefile = "E:\\这几天的乱七八糟\\一组50个\\test1.pcd";
 	targetfile = "E:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";*/
-	sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000001.pcd";
-	targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000002.pcd";
+	/*sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000001.pcd";
+	targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000002.pcd";*/
+	sourcefile = "C:\\files\\codes\\git\\Octree\\data\\0000000001.pcd";
+	targetfile = "C:\\files\\codes\\git\\Octree\\data\\0000000002.pcd";
 
 	PointCloud<PointXYZ>::Ptr source_pre(new PointCloud<PointXYZ>());
 	PointCloud<PointXYZ>::Ptr target_pre(new PointCloud<PointXYZ>());
@@ -257,14 +259,14 @@ int main()
 	//pcl_ndt.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
 
 	//vgicp
-	vgicp.setResolution(1.0);     //注意分辨率
-	vgicp.setNumThreads(8);
-	vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+	//vgicp.setResolution(1.0);     //注意分辨率
+	//vgicp.setNumThreads(8);
+	//vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
 	//vgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
 
 	//svgicp
-	svgicp.setSourceResolution(0.1);
-	svgicp.setTargetResolution(1.0);     //注意分辨率
+	svgicp.setSourceResolution(0.01);
+	svgicp.setTargetResolution(0.05);     //注意分辨率
 	svgicp.setNumThreads(8);
 	svgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
 	svgicp.setRotationEpsilon(0.001);
@@ -291,12 +293,13 @@ int main()
 	//PointCloud<PointXYZ>::Ptr guessed(new PointCloud<PointXYZ>());
 	//pcl::transformPointCloud(*source_pre, *guessed, init_guess);
 
+	// 画图
 	//res_scts.push_back(pcl_align(pcl_ndt, guessed, target_pre, trans));
-	res_scts.push_back(pcl_align(vgicp, source_pre, target_pre, trans));
+	//res_scts.push_back(pcl_align(vgicp, source_pre, target_pre, trans));
 	res_scts.push_back(pcl_align(svgicp, source_pre, target_pre, trans));
 	//res_scts.push_back(pcl_align(pcl_icp, guessed, target_pre, trans));
 	//res_scts.push_back(pcl_align(pcl_gicp, guessed, target_pre, trans));
-	drawRes(res_scts);
+	//drawRes(res_scts);
 
 	//Matrix4f trans = Matrix4f::Identity();
 	//pcl_align(pcl_ndt, source_pre, target_pre, trans);

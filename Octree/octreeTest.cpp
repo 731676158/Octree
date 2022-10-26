@@ -16,6 +16,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include "fast_vgicp.hpp"
+#include "fast_svgicp.hpp"
 
 #include "octree_recur_iter.h"
 #include "plot.h"
@@ -40,6 +41,18 @@ using namespace Eigen;
 
 
 int reg_times = 0;
+
+//展示点云基本信息
+void CloudMessages(const PointCloud<PointXYZ>::ConstPtr& cloud) {
+	Eigen::Vector4f min_pt = Eigen::Vector4f::Zero();
+	Eigen::Vector4f max_pt = Eigen::Vector4f::Zero();
+	getMinMax3D<PointXYZ>(*cloud, min_pt, max_pt);
+	cout << "Bound for the cloud: " << endl;
+	cout << "x: [" << min_pt[0] << ", " << max_pt[0] << "];" << endl;
+	cout << "y: [" << min_pt[1] << ", " << max_pt[1] << "];" << endl;
+	cout << "z: [" << min_pt[2] << ", " << max_pt[2] << "];" << endl;
+	cout << "Loaded " << cloud->width * cloud->height << " points." << endl;
+}
 
 void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<PointXYZ>::ConstPtr& target)
 {
@@ -182,12 +195,14 @@ int main()
 	/*********************************点云读取与滤波*********************************************/
 	
 	string sourcefile, targetfile;
-	sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan1.pcd";
-	targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan2.pcd";
+	//sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan1.pcd";
+	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan2.pcd";
 	//sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\source.pcd";
 	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\target.pcd";
 	//sourcefile = "D:\\这几天的乱七八糟\\一组50个\\test1.pcd";
 	//targetfile = "D:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";
+	sourcefile = "C:\\files\\codes\\git\\Octree\\data\\0000000001.pcd";
+	targetfile = "C:\\files\\codes\\git\\Octree\\data\\0000000002.pcd";
 
 	PointCloud<PointXYZ>::Ptr source_pre(new PointCloud<PointXYZ>());
 	PointCloud<PointXYZ>::Ptr target_pre(new PointCloud<PointXYZ>());
@@ -211,8 +226,21 @@ int main()
 	double ds = duration_cast<nanoseconds>(t2 - t1).count() / 1e9;
 	double dt = duration_cast<nanoseconds>(t3 - t2).count() / 1e9;
 
-	cout << "Loaded " << source_pre->width * source_pre->height << " source points and " << target_pre->width * target_pre->height << " target points." << endl;
-	cout << "Source time: " << ds << " sec. Target time: " << dt << " sec." << endl;
+	cout << "Source load time: " << ds << " sec.\n Target load time: " << dt << " sec." << endl;
+	cout << "---source cloud messages: " << endl;
+	CloudMessages(source_pre);
+	cout << "---target cloud messages: " << endl;
+	CloudMessages(target_pre);
+
+	float res[3] = { 0.1, 0.1, 0.1 };
+	voxel_sample(source_pre, source_pre, res);
+	voxel_sample(target_pre, target_pre, res);
+
+	cout << "-------------After filtering" << endl;
+	cout << "---source cloud messages: " << endl;
+	CloudMessages(source_pre);
+	cout << "---target cloud messages: " << endl;
+	CloudMessages(target_pre);
 	
 	/*********************************体素滤波*********************************************/
 	
@@ -255,6 +283,7 @@ int main()
 	NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
 	//IterativeClosestPoint<PointXYZ, PointXYZ> pcl_icp;
 	//fast_gicp::FastVGICP<PointXYZ, PointXYZ> vgicp;
+	fast_gicp::FastSVGICP<PointXYZ, PointXYZ> svgicp;
 
 	Matrix4f trans = Matrix4f::Identity();
 	Matrix4f trans_iter = Matrix4f::Identity();
@@ -352,6 +381,12 @@ int main()
 	
 	double read_time = duration_cast<nanoseconds>(s2 - s1).count() / 1e9;
 	cout << "read_time: " << read_time << " [sec]" << endl;
+
+	cout << "--------levels and resolution----------" << endl;
+	for (int i = 1; i <= depth; ++i) {
+		cout << "Level " << i << " resolution: " << target_tree_level_res[i - 1] << endl;
+	}
+
 	cout << "begin recursively registration" << endl;
 
 	//vector<double> reg_times;
@@ -372,7 +407,7 @@ int main()
 	//pcl::transformPointCloud(*last_source, *source_temp, trans);
 	//RegViewer(source, target, source_temp);
 
-	for (size_t i =1; i < depth; i++)
+	for (size_t i =2; i < depth; i++)
 	{
 		
 		source_temp->height = 1;
@@ -388,15 +423,26 @@ int main()
 		pcl::transformPointCloud(*source_temp, *source_temp, trans);
 
 		//配准
-		pcl_ndt.setResolution(max(static_cast<float>(0.05) ,target_tree_level_res[i]));     //注意分辨率
-		//pcl_ndt.setNumThreads(1);
-		pcl_ndt.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+		// ndt
+		//pcl_ndt.setResolution(max(static_cast<float>(0.05) ,target_tree_level_res[i]));     //注意分辨率
+		////pcl_ndt.setNumThreads(1);
+		//pcl_ndt.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+
+		//svgicp
+		svgicp.setSourceResolution(0.01);
+		svgicp.setTargetResolution(0.05);     //注意分辨率
+		svgicp.setNumThreads(8);
+		svgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+		svgicp.setRotationEpsilon(0.001);
+		//svgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
+
 		trans_iter = Matrix4f::Identity();
 		
 		//if (i == 6) trans_iter = init_guess;  //第一次进来添加一个初始位姿估计
 		
 		
-		reg_this_st = pcl_align(pcl_ndt, source_temp, target_temp, trans_iter);
+		//reg_this_st = pcl_align(pcl_ndt, source_temp, target_temp, trans_iter);
+		reg_this_st = pcl_align(svgicp, source_temp, target_temp, trans_iter);
 
 		reg_score_times.push_back(reg_this_st);
 
