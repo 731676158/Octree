@@ -237,7 +237,7 @@ int main()
 
 	float res[3] = {0.1, 0.1, 0.1};
 	voxel_sample(source_pre, source_pre, res);
-	voxel_sample(target_pre, target_pre, res);
+	//voxel_sample(target_pre, target_pre, res);
 
 	cout << "-------------After filtering" << endl;
 	cout << "---source cloud messages: " << endl;

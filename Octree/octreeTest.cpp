@@ -232,7 +232,7 @@ int main()
 	cout << "---target cloud messages: " << endl;
 	CloudMessages(target_pre);
 
-	float res[3] = { 0.1, 0.1, 0.1 };
+	float res[3] = { 0.001, 0.001, 0.001 };
 	voxel_sample(source_pre, source_pre, res);
 	voxel_sample(target_pre, target_pre, res);
 
@@ -334,7 +334,7 @@ int main()
 	
 		/*********************************八叉树节点构建*********************************************/
 
-	double res_octree = 0.05;
+	double res_octree = 0.001;
 	OctreePointCloud<PointXYZ> octree_source(res_octree);
 	octree_source.setInputCloud(last_source);
 	octree_source.addPointsFromInputCloud();
@@ -419,6 +419,8 @@ int main()
 		target_temp->width = occupied_centers_target_treelevel[i].size();
 		target_temp->is_dense = false;
 		target_temp->points = occupied_centers_target_treelevel[i];
+
+		cout << "Level " << i << " source points: " << occupied_centers_source_treelevel[i].size() << " target points: " << occupied_centers_target_treelevel[i].size() << endl;
 
 		pcl::transformPointCloud(*source_temp, *source_temp, trans);
 
