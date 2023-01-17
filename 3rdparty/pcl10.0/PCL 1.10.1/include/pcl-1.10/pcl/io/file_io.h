@@ -347,9 +347,9 @@ namespace pcl
     }
     else
     {
-      std::istringstream is (st);
-      is.imbue (std::locale::classic ());
-      if (!(is >> value))
+      // std::istringstream is (st);
+      // is.imbue (std::locale::classic ());
+      // if (!(is >> value))
         value = static_cast<Type> (atof (st.c_str ()));
     }
 
@@ -371,10 +371,10 @@ namespace pcl
     else
     {
       int val;
-      std::istringstream is (st);
-      is.imbue (std::locale::classic ());
+      //std::istringstream is (st);
+      //is.imbue (std::locale::classic ());
       //is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
-      if (!(is >> val))
+      //if (!(is >> val))
         val = static_cast<int> (atof (st.c_str ()));
       value = static_cast<std::int8_t> (val);
     }
@@ -397,10 +397,10 @@ namespace pcl
     else
     {
       int val;
-      std::istringstream is (st);
-      is.imbue (std::locale::classic ());
+      //std::istringstream is (st);
+      //is.imbue (std::locale::classic ());
       //is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
-      if (!(is >> val))
+      //if (!(is >> val))
         val = static_cast<int> (atof (st.c_str ()));
       value = static_cast<std::uint8_t> (val);
     }

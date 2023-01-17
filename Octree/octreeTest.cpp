@@ -6,6 +6,7 @@
 #include <thread>
 #include <algorithm>
 #include <Eigen/Dense>
+#include <omp.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/octree/octree_pointcloud_voxelcentroid.h>
 #include <pcl/point_types.h>
@@ -75,6 +76,7 @@ void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<Po
 	viewer->addPointCloud<PointXYZ>(source, source_cloud_handler, "source");
 	viewer->addPointCloud<PointXYZ>(target, target_cloud_handler, "target");
 	viewer->addPointCloud<PointXYZ>(aligned, aligned_cloud_handler, "aligned");
+	viewer->addCoordinateSystem(10.0, "reference", 0);
 	viewer->spin();
 }
 
@@ -124,7 +126,9 @@ pair<double,double> pcl_align(Registration& reg, const PointCloud<PointXYZ>::Con
 
 	cout << "time: " << d << " [secs]." << endl;
 
-
+	//GICP用到
+	iter_times = reg.getMaximumOptimizerIterations();
+	cout << "iter times:" << iter_times << endl;
 	//NDT用到
 	//iter_times = reg.getFinalNumIteration();
 	//cout << "iter times: " << iter_times << endl;
@@ -143,7 +147,7 @@ pair<double,double> pcl_align(Registration& reg, const PointCloud<PointXYZ>::Con
 	//aligned_name = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\test_aligned" + rtime + ".pcd";
 	//savePCDFile(aligned_name, *aligned);
 
-	RegViewer(source, target, aligned);
+	//RegViewer(source, target, aligned);
 	//RegViewer(guessed, target, aligned);
 
 	++reg_times;
@@ -174,19 +178,19 @@ void drawRes(vector<pair<double, double>>& res)
 		tms.push_back(tm);
 	}
 
-	/*Graph2d::graph2d g2d_s(700, 590, { 0, scr_min}, { static_cast<double>(res.size()), scr_max});
+	Graph2d::graph2d g2d_s(700, 590, { 0, scr_min}, { static_cast<double>(res.size()), scr_max});
 	g2d_s.xlabel("level");
-	g2d_s.ylabel("score");
-	g2d_s.title("Reg_score_results");
+	g2d_s.ylabel("score/(m^2)");
+	g2d_s.title("Registration score");
 	g2d_s.plot(scrs, RED);
-	g2d_s.waitKey();*/
+	g2d_s.waitKey();
 
-	Graph2d::graph2d g2d_t(700, 590, { 0, tm_min }, { static_cast<double>(res.size()), tm_max });
-	g2d_t.xlabel("level");
-	g2d_t.ylabel("time");
-	g2d_t.title("Reg_time_results");
-	g2d_t.plot(tms, RED);
-	g2d_t.waitKey();
+	//Graph2d::graph2d g2d_t(700, 590, { 0, tm_min }, { static_cast<double>(res.size()), tm_max });
+	//g2d_t.xlabel("level");
+	//g2d_t.ylabel("time");
+	//g2d_t.title("Reg_time_results");
+	//g2d_t.plot(tms, RED);
+	//g2d_t.waitKey();
 }
 
 int main()
@@ -197,12 +201,12 @@ int main()
 	string sourcefile, targetfile;
 	//sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan1.pcd";
 	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan2.pcd";
-	//sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\source.pcd";
-	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\target.pcd";
-	//sourcefile = "D:\\这几天的乱七八糟\\一组50个\\test1.pcd";
-	//targetfile = "D:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";
-	sourcefile = "C:\\files\\codes\\git\\Octree\\data\\0000000001.pcd";
-	targetfile = "C:\\files\\codes\\git\\Octree\\data\\0000000002.pcd";
+	//sourcefile = "C:\\files\\codes\\git\\Octree\\source.pcd";
+	//targetfile = "C:\\files\\codes\\git\\Octree\\target.pcd";
+	sourcefile = "E:\\这几天的乱七八糟\\一组50个\\test1.pcd";
+	targetfile = "E:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";
+	//sourcefile = "C:\\files\\codes\\git\\Octree\\data\\0000000001.pcd";
+	//targetfile = "C:\\files\\codes\\git\\Octree\\data\\0000000002.pcd";
 
 	PointCloud<PointXYZ>::Ptr source_pre(new PointCloud<PointXYZ>());
 	PointCloud<PointXYZ>::Ptr target_pre(new PointCloud<PointXYZ>());
@@ -276,17 +280,15 @@ int main()
 	
 	PointCloud<PointXYZ>::Ptr last_source(new PointCloud<PointXYZ>(*source));
 
-	PointCloud<PointXYZ>::Ptr source_temp(new PointCloud<PointXYZ>());
-	PointCloud<PointXYZ>::Ptr target_temp(new PointCloud<PointXYZ>());
-
 	cout << "--- pcl_ndt ---" << endl;
-	NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
+	//NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
 	//IterativeClosestPoint<PointXYZ, PointXYZ> pcl_icp;
+	GeneralizedIterativeClosestPoint<PointXYZ, PointXYZ> pcl_gicp;
 	//fast_gicp::FastVGICP<PointXYZ, PointXYZ> vgicp;
-	fast_gicp::FastSVGICP<PointXYZ, PointXYZ> svgicp;
+	//fast_gicp::FastSVGICP<PointXYZ, PointXYZ> svgicp;
 
 	Matrix4f trans = Matrix4f::Identity();
-	Matrix4f trans_iter = Matrix4f::Identity();
+	//Matrix4f trans_iter = Matrix4f::Identity();
 	/*********************************调试:直接配准*********************************************/
 	//cout << "--- pcl_ndt ---" << endl;
 	//NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
@@ -334,6 +336,9 @@ int main()
 	
 		/*********************************八叉树节点构建*********************************************/
 
+	// 先验地添加，因为如果通过八叉树自行决定分辨率，那还需要一个最近邻搜索的步骤去寻找所有点集中距离最近的点，
+	// 这一步极其耗时
+	// 分辨率必须大于点集之间存在的两点间最小距离
 	double res_octree = 0.001;
 	OctreePointCloud<PointXYZ> octree_source(res_octree);
 	octree_source.setInputCloud(last_source);
@@ -395,8 +400,9 @@ int main()
 	//vector<double> reg_scores;
 	//double reg_this_score = 0;
 
-	vector<pair<double, double>> reg_score_times;
-	pair<double, double> reg_this_st;
+	//vector<pair<double, double>> reg_score_times;
+	vector<pair<double, double>> reg_score_times(depth, make_pair<double, double>(0, 0));
+	//pair<double, double> reg_this_st;
 
 	//AngleAxisf init_rotation(0.6931, Vector3f::UnitZ());
 	//Translation3f init_translation(1.79387, 0.720047, 0);
@@ -407,8 +413,12 @@ int main()
 	//pcl::transformPointCloud(*last_source, *source_temp, trans);
 	//RegViewer(source, target, source_temp);
 
-	for (size_t i =2; i < depth; i++)
+	int num_threads_ = omp_get_num_procs();
+#pragma omp parallel for num_threads(num_threads_) schedule(dynamic)
+	for (size_t i = 2; i < depth; i++)
 	{
+		PointCloud<PointXYZ>::Ptr source_temp(new PointCloud<PointXYZ>());
+		PointCloud<PointXYZ>::Ptr target_temp(new PointCloud<PointXYZ>());
 		
 		source_temp->height = 1;
 		source_temp->width = occupied_centers_source_treelevel[i].size();
@@ -422,38 +432,47 @@ int main()
 
 		cout << "Level " << i << " source points: " << occupied_centers_source_treelevel[i].size() << " target points: " << occupied_centers_target_treelevel[i].size() << endl;
 
-		pcl::transformPointCloud(*source_temp, *source_temp, trans);
+		//加了这一句是层层递进循环配准
+		// 不加这一句是每层分别配准
+		//pcl::transformPointCloud(*source_temp, *source_temp, trans);
 
 		//配准
+		// gicp
+		GeneralizedIterativeClosestPoint<PointXYZ, PointXYZ> pcl_gicp;
+		pcl_gicp.setTransformationEpsilon(0.001);
+		pcl_gicp.setMaximumIterations(35);
+		
 		// ndt
 		//pcl_ndt.setResolution(max(static_cast<float>(0.05) ,target_tree_level_res[i]));     //注意分辨率
-		////pcl_ndt.setNumThreads(1);
+		//pcl_ndt.setNumThreads(1);
 		//pcl_ndt.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
 
 		//svgicp
-		svgicp.setSourceResolution(0.01);
-		svgicp.setTargetResolution(0.05);     //注意分辨率
-		svgicp.setNumThreads(8);
-		svgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
-		svgicp.setRotationEpsilon(0.001);
+		//svgicp.setSourceResolution(0.01);
+		//svgicp.setTargetResolution(0.05);     //注意分辨率
+		//svgicp.setNumThreads(8);
+		//svgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //就先依照这个设定最小的阈值吧
+		//svgicp.setRotationEpsilon(0.001);
 		//svgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
 
-		trans_iter = Matrix4f::Identity();
+		Matrix4f trans_iter = Matrix4f::Identity();
 		
 		//if (i == 6) trans_iter = init_guess;  //第一次进来添加一个初始位姿估计
 		
 		
+		pair<double, double> reg_this_st = pcl_align(pcl_gicp, source_temp, target_temp, trans_iter);
 		//reg_this_st = pcl_align(pcl_ndt, source_temp, target_temp, trans_iter);
-		reg_this_st = pcl_align(svgicp, source_temp, target_temp, trans_iter);
+		//reg_this_st = pcl_align(svgicp, source_temp, target_temp, trans_iter);
 
-		reg_score_times.push_back(reg_this_st);
-
-		trans *= trans_iter;
+		//reg_score_times.push_back(reg_this_st);
+		reg_score_times[i] = reg_this_st;
+		
+		//trans *= trans_iter;
 	}
 
 
-	PointCloud<PointXYZ>::Ptr aligned(new PointCloud<PointXYZ>());
-	pcl::transformPointCloud(*source, *aligned, trans);
+	//PointCloud<PointXYZ>::Ptr aligned(new PointCloud<PointXYZ>());
+	//pcl::transformPointCloud(*source, *aligned, trans);
 
 	drawRes(reg_score_times);
 
