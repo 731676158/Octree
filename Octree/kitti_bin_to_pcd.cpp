@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 using namespace pcl;
 using namespace std;
@@ -52,39 +53,60 @@ int main(int argc, char** argv) {
 
 	//string infile{ "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000002.bin" };
 	//string outfile{ "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000002.pcd" };
-	string infile{ "C:\\files\\codes\\git\\Octree\\data\\0000000002.bin" };
-	string outfile{ "C:\\files\\codes\\git\\Octree\\data\\0000000002.pcd" };
+	//for (int i = 0; i < 154; ++i)
+	int i = 1;
+	{
+		string infile_prefix{ "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\2011_09_26\\2011_09_26_drive_0005_sync\\velodyne_points\\data\\" };
+		string outfile_prefix{ "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\" };
 
-	// load point cloud
-	fstream input(infile.c_str(), ios::in | ios::binary);
-	if (!input.good()) {
-		cerr << "Could not read file: " << infile << endl;
-		exit(EXIT_FAILURE);
+		if (i < 10)
+		{
+			infile_prefix = infile_prefix + "000000000" + to_string(i) + ".bin";
+			outfile_prefix = outfile_prefix + "000000000" + to_string(i) + ".pcd";
+		}
+		else if (i < 100)
+		{
+			infile_prefix = infile_prefix + "00000000" + to_string(i) + ".bin";
+			outfile_prefix = outfile_prefix + "00000000" + to_string(i) + ".pcd";
+		}
+		else if (i < 1000)
+		{
+			infile_prefix = infile_prefix + "0000000" + to_string(i) + ".bin";
+			outfile_prefix = outfile_prefix + "0000000" + to_string(i) + ".pcd";
+		}
+
+		//if (std::filesystem::exists(outfile_prefix)) continue;
+
+		// load point cloud
+		fstream input(infile_prefix.c_str(), ios::in | ios::binary);
+		if (!input.good()) {
+			cerr << "Could not read file: " << infile_prefix << endl;
+			exit(EXIT_FAILURE);
+		}
+		input.seekg(0, ios::beg);
+
+		pcl::PointCloud<PointXYZI>::Ptr points(new pcl::PointCloud<PointXYZI>);
+		//pcl::PointCloud<PointCloud2>::Ptr points (new pcl::PointCloud<PointCloud2>);
+
+		int j;
+		for (j = 0; input.good() && !input.eof(); j++) {
+			PointXYZI point;
+			input.read((char*)&point.x, 3 * sizeof(float));
+			input.read((char*)&point.intensity, sizeof(float));
+			points->push_back(point);
+		}
+		input.close();
+
+		cout << "Read KTTI point cloud with " << j << " points, writing to " << outfile_prefix << endl;
+
+		pcl::PCDWriter writer;
+
+		// Save DoN features
+				//pcl::io::savePCDFileBinary(outfile, *points);
+		writer.write<PointXYZI>(outfile_prefix, *points, false);
+		//writer.write<PointCloud2> (outfile, *points, false);
+
 	}
-	input.seekg(0, ios::beg);
-
-	pcl::PointCloud<PointXYZI>::Ptr points(new pcl::PointCloud<PointXYZI>);
-	//pcl::PointCloud<PointCloud2>::Ptr points (new pcl::PointCloud<PointCloud2>);
-
-	int i;
-	for (i = 0; input.good() && !input.eof(); i++) {
-		PointXYZI point;
-		input.read((char*)&point.x, 3 * sizeof(float));
-		input.read((char*)&point.intensity, sizeof(float));
-		points->push_back(point);
-	}
-	input.close();
-
-	cout << "Read KTTI point cloud with " << i << " points, writing to " << outfile << endl;
-
-	pcl::PCDWriter writer;
-
-	// Save DoN features
-			//pcl::io::savePCDFileBinary(outfile, *points);
-	writer.write<PointXYZI>(outfile, *points, false);
-	//writer.write<PointCloud2> (outfile, *points, false);
-
-	cout << "I CAN SEE YOU" << endl;
 
 
 }

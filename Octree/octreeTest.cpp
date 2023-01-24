@@ -33,6 +33,8 @@ using namespace pcl::visualization;
 using namespace pcl::octree;
 using namespace Eigen;
 
+#define CloudData PointXYZ
+
 /**
 	本文件用来对同一点云的不同层级做对比
 	文件夹位置
@@ -44,10 +46,10 @@ using namespace Eigen;
 int reg_times = 0;
 
 //展示点云基本信息
-void CloudMessages(const PointCloud<PointXYZ>::ConstPtr& cloud) {
+void CloudMessages(const PointCloud<CloudData>::ConstPtr& cloud) {
 	Eigen::Vector4f min_pt = Eigen::Vector4f::Zero();
 	Eigen::Vector4f max_pt = Eigen::Vector4f::Zero();
-	getMinMax3D<PointXYZ>(*cloud, min_pt, max_pt);
+	getMinMax3D<CloudData>(*cloud, min_pt, max_pt);
 	cout << "Bound for the cloud: " << endl;
 	cout << "x: [" << min_pt[0] << ", " << max_pt[0] << "];" << endl;
 	cout << "y: [" << min_pt[1] << ", " << max_pt[1] << "];" << endl;
@@ -55,38 +57,53 @@ void CloudMessages(const PointCloud<PointXYZ>::ConstPtr& cloud) {
 	cout << "Loaded " << cloud->width * cloud->height << " points." << endl;
 }
 
-void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<PointXYZ>::ConstPtr& target)
+void print_score_time(vector<pair<double, double>>& res)
+{
+	// In order to make ctrl+c more convenient.
+	cout << "scores: ";
+	for (auto& r : res)
+	{
+		cout << r.first << " ";
+	}
+	cout << endl << "times: ";
+	for (auto& r : res)
+	{
+		cout << r.second << " ";
+	}
+}
+
+void RegViewer(const PointCloud<CloudData>::ConstPtr& source, const PointCloud<CloudData>::ConstPtr& target)
 {
 	std::shared_ptr<PCLVisualizer> viewer(new PCLVisualizer("source(red),target(green)"));
 	viewer->setBackgroundColor(255, 255, 255);
-	PointCloudColorHandlerCustom<PointXYZ> source_cloud_handler(source, 255, 0, 0);
-	PointCloudColorHandlerCustom<PointXYZ> target_cloud_handler(target, 0, 255, 0);
-	viewer->addPointCloud<PointXYZ>(source, source_cloud_handler, "source");
-	viewer->addPointCloud<PointXYZ>(target, target_cloud_handler, "target");
+	PointCloudColorHandlerCustom<CloudData> source_cloud_handler(source, 255, 0, 0);
+	PointCloudColorHandlerCustom<CloudData> target_cloud_handler(target, 0, 255, 0);
+	viewer->addPointCloud<CloudData>(source, source_cloud_handler, "source");
+	viewer->addPointCloud<CloudData>(target, target_cloud_handler, "target");
 	viewer->spin();
 }
 
-void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<PointXYZ>::ConstPtr& target, const PointCloud<PointXYZ>::ConstPtr& aligned)
+void RegViewer(const PointCloud<CloudData>::ConstPtr& source, const PointCloud<CloudData>::ConstPtr& target, const PointCloud<CloudData>::ConstPtr& aligned)
 {
 	std::shared_ptr<PCLVisualizer> viewer(new PCLVisualizer("source(red),target(green),aligned(blue)"));
 	viewer->setBackgroundColor(255, 255, 255);
-	PointCloudColorHandlerCustom<PointXYZ> source_cloud_handler(source, 255, 0, 0);
-	PointCloudColorHandlerCustom<PointXYZ> target_cloud_handler(target, 0, 255, 0);
-	PointCloudColorHandlerCustom<PointXYZ> aligned_cloud_handler(aligned, 0, 0, 255);
-	viewer->addPointCloud<PointXYZ>(source, source_cloud_handler, "source");
-	viewer->addPointCloud<PointXYZ>(target, target_cloud_handler, "target");
-	viewer->addPointCloud<PointXYZ>(aligned, aligned_cloud_handler, "aligned");
+	PointCloudColorHandlerCustom<CloudData> source_cloud_handler(source, 255, 0, 0);
+	PointCloudColorHandlerCustom<CloudData> target_cloud_handler(target, 0, 255, 0);
+	PointCloudColorHandlerCustom<CloudData> aligned_cloud_handler(aligned, 0, 0, 255);
+	viewer->addPointCloud<CloudData>(source, source_cloud_handler, "source");
+	viewer->addPointCloud<CloudData>(target, target_cloud_handler, "target");
+	viewer->addPointCloud<CloudData>(aligned, aligned_cloud_handler, "aligned");
 	viewer->addCoordinateSystem(10.0, "reference", 0);
 	viewer->spin();
 }
 
 
 //体素降采样
-void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointXYZ>::Ptr& filted, float* res)
+void voxel_sample(const PointCloud<CloudData>::ConstPtr& cloud, PointCloud<CloudData>::Ptr& filted, float* res)
 {
-	//PointCloud<PointXYZ>::Ptr filted(new PointCloud<PointXYZ>);
+	//PointCloud<CloudData>::Ptr filted(new PointCloud<CloudData>);
 
-	ApproximateVoxelGrid<PointXYZ> voxelgrid;
+	ApproximateVoxelGrid<CloudData> voxelgrid;
 	voxelgrid.setLeafSize(res[0], res[1], res[2]);
 	voxelgrid.setInputCloud(cloud);
 	voxelgrid.filter(*filted);
@@ -94,16 +111,16 @@ void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointX
 
 //ndt配准
 template<typename Registration>
-pair<double,double> pcl_align(Registration& reg, const PointCloud<PointXYZ>::ConstPtr& source,
-	const PointCloud<PointXYZ>::ConstPtr& target, Matrix4f& trans)
+pair<double,double> pcl_align(Registration& reg, const PointCloud<CloudData>::ConstPtr& source,
+	const PointCloud<CloudData>::ConstPtr& target, Matrix4f& trans)
 {
 	cout << "---------" << reg_times << "----------" << endl;
-	PointCloud<PointXYZ>::Ptr aligned(new PointCloud<PointXYZ>());
+	PointCloud<CloudData>::Ptr aligned(new PointCloud<CloudData>());
 	double score = 0.0;
 
 	//传入的trans作为配准估计
 	//Matrix4f trans;
-	//PointCloud<PointXYZ>::Ptr guessed(new PointCloud<PointXYZ>());
+	//PointCloud<CloudData>::Ptr guessed(new PointCloud<CloudData>());
 	//transformPointCloud(*source, *guessed, trans);
 	
 	//添加位姿估计
@@ -178,6 +195,8 @@ void drawRes(vector<pair<double, double>>& res)
 		tms.push_back(tm);
 	}
 
+	print_score_time(res);
+
 	Graph2d::graph2d g2d_s(700, 590, { 0, scr_min}, { static_cast<double>(res.size()), scr_max});
 	g2d_s.xlabel("level");
 	g2d_s.ylabel("score/(m^2)");
@@ -203,23 +222,23 @@ int main()
 	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan2.pcd";
 	//sourcefile = "C:\\files\\codes\\git\\Octree\\source.pcd";
 	//targetfile = "C:\\files\\codes\\git\\Octree\\target.pcd";
-	sourcefile = "E:\\这几天的乱七八糟\\一组50个\\test1.pcd";
-	targetfile = "E:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";
-	//sourcefile = "C:\\files\\codes\\git\\Octree\\data\\0000000001.pcd";
-	//targetfile = "C:\\files\\codes\\git\\Octree\\data\\0000000002.pcd";
+	//sourcefile = "E:\\这几天的乱七八糟\\一组50个\\test1.pcd";
+	//targetfile = "E:\\这几天的乱七八糟\\一组50个\\test2_noise.pcd";
+	sourcefile = "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\0000000010.pcd";
+	targetfile = "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\0000000000.pcd";
 
-	PointCloud<PointXYZ>::Ptr source_pre(new PointCloud<PointXYZ>());
-	PointCloud<PointXYZ>::Ptr target_pre(new PointCloud<PointXYZ>());
+	PointCloud<CloudData>::Ptr source_pre(new PointCloud<CloudData>());
+	PointCloud<CloudData>::Ptr target_pre(new PointCloud<CloudData>());
 
 	cout << "Start reading" << endl;
 	auto t1 = high_resolution_clock::now();
-	if (loadPCDFile<PointXYZ>(sourcefile, *source_pre) == -1)
+	if (loadPCDFile<CloudData>(sourcefile, *source_pre) == -1)
 	{
 		PCL_ERROR("Couldn't read source file \n");
 		return -1;
 	}
 	auto t2 = high_resolution_clock::now();
-	if (loadPCDFile<PointXYZ>(targetfile, *target_pre) == -1)
+	if (loadPCDFile<CloudData>(targetfile, *target_pre) == -1)
 	{
 		PCL_ERROR("Couldn't read target file \n");
 		return -1;
@@ -250,48 +269,48 @@ int main()
 	
 	//体素滤波降采样
 	/*float res[3] = { 0.05, 0.05, 0.05 };
-	PointCloud<PointXYZ>::Ptr source(new PointCloud<PointXYZ>());
+	PointCloud<CloudData>::Ptr source(new PointCloud<CloudData>());
 	voxel_sample(source_pre, source, res);
-	PointCloud<PointXYZ>::Ptr target(new PointCloud<PointXYZ>());
+	PointCloud<CloudData>::Ptr target(new PointCloud<CloudData>());
 	voxel_sample(target_pre, target, res);
 	cout << "Left " << source->width * source->height << " source points and " << target->width * target->height << " target points." << endl;*/
 
 	//RegViewer(source_pre, source);
 	
 	//不采样了，直接用，因为后面有八叉树建立
-	PointCloud<PointXYZ>::Ptr source(new PointCloud<PointXYZ>());
-	PointCloud<PointXYZ>::Ptr target(new PointCloud<PointXYZ>());
+	PointCloud<CloudData>::Ptr source(new PointCloud<CloudData>());
+	PointCloud<CloudData>::Ptr target(new PointCloud<CloudData>());
 	source = source_pre;
 	target = target_pre;
 	cout << "Left " << source->width * source->height << " source points and " << target->width * target->height << " target points." << endl;
 
 	///*********************************建立八叉树*********************************************/
-	//OctreePointCloudVoxelCentroid<PointXYZ> octree_voxels(1.0);
+	//OctreePointCloudVoxelCentroid<CloudData> octree_voxels(1.0);
 	//octree_voxels.setInputCloud(source);
 	//octree_voxels.addPointsFromInputCloud();
 	//int source_depth = octree_voxels.getTreeDepth();
 	//cout << "source depth : " << source_depth << endl;
-	//vector<PointXYZ, Eigen::aligned_allocator<PointXYZ>> occupied_voxel_centroids;
+	//vector<CloudData, Eigen::aligned_allocator<CloudData>> occupied_voxel_centroids;
 	//int occupied_voxnum = octree_voxels.getOccupiedVoxelCenters(occupied_voxel_centroids); 
 
 	//cout << "occupied voxels: " << occupied_voxnum << endl;
 	
 	/*********************************按分辨率循环配准*********************************************/
 	
-	PointCloud<PointXYZ>::Ptr last_source(new PointCloud<PointXYZ>(*source));
+	PointCloud<CloudData>::Ptr last_source(new PointCloud<CloudData>(*source));
 
 	cout << "--- pcl_ndt ---" << endl;
-	//NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
-	//IterativeClosestPoint<PointXYZ, PointXYZ> pcl_icp;
-	GeneralizedIterativeClosestPoint<PointXYZ, PointXYZ> pcl_gicp;
-	//fast_gicp::FastVGICP<PointXYZ, PointXYZ> vgicp;
-	//fast_gicp::FastSVGICP<PointXYZ, PointXYZ> svgicp;
+	//NormalDistributionsTransform<CloudData, CloudData> pcl_ndt;
+	//IterativeClosestPoint<CloudData, CloudData> pcl_icp;
+	GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
+	//fast_gicp::FastVGICP<CloudData, CloudData> vgicp;
+	//fast_gicp::FastSVGICP<CloudData, CloudData> svgicp;
 
 	Matrix4f trans = Matrix4f::Identity();
 	//Matrix4f trans_iter = Matrix4f::Identity();
 	/*********************************调试:直接配准*********************************************/
 	//cout << "--- pcl_ndt ---" << endl;
-	//NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
+	//NormalDistributionsTransform<CloudData, CloudData> pcl_ndt;
 	//pcl_ndt.setResolution(6.0);
 	//pcl_ndt.setStepSize(0.1);
 	//pcl_ndt.setTransformationEpsilon(0.0001);
@@ -303,10 +322,10 @@ int main()
 	//for (double res = 5; res >= 0.05; res /= 2.0)// res -= interval)
 	//{
 	//	//源点云
-	//	OctreePointCloud<PointXYZ> octree_source(res);
+	//	OctreePointCloud<CloudData> octree_source(res);
 	//	octree_source.setInputCloud(last_source);
 	//	octree_source.addPointsFromInputCloud();
-	//	vector<PointXYZ, Eigen::aligned_allocator<PointXYZ>> occupied_source_centroids;
+	//	vector<CloudData, Eigen::aligned_allocator<CloudData>> occupied_source_centroids;
 	//	octree_source.getOccupiedVoxelCenters(occupied_source_centroids);
 	//	source_temp->height = 1;
 	//	source_temp->width = occupied_source_centroids.size();
@@ -314,10 +333,10 @@ int main()
 	//	source_temp->points = occupied_source_centroids;
 	//	
 	//	//目标点云
-	//	OctreePointCloud<PointXYZ> octree_target(res);
+	//	OctreePointCloud<CloudData> octree_target(res);
 	//	octree_target.setInputCloud(target);
 	//	octree_target.addPointsFromInputCloud();
-	//	vector<PointXYZ, Eigen::aligned_allocator<PointXYZ>> occupied_target_centroids;
+	//	vector<CloudData, Eigen::aligned_allocator<CloudData>> occupied_target_centroids;
 	//	octree_target.getOccupiedVoxelCenters(occupied_target_centroids);
 	//	target_temp->height = 1;
 	//	target_temp->width = occupied_target_centroids.size();
@@ -339,17 +358,17 @@ int main()
 	// 先验地添加，因为如果通过八叉树自行决定分辨率，那还需要一个最近邻搜索的步骤去寻找所有点集中距离最近的点，
 	// 这一步极其耗时
 	// 分辨率必须大于点集之间存在的两点间最小距离
-	double res_octree = 0.001;
-	OctreePointCloud<PointXYZ> octree_source(res_octree);
+	double res_octree = 0.01;
+	OctreePointCloud<CloudData> octree_source(res_octree);
 	octree_source.setInputCloud(last_source);
 	octree_source.addPointsFromInputCloud();
 
-	OctreePointCloud<PointXYZ> octree_target(res_octree);
+	OctreePointCloud<CloudData> octree_target(res_octree);
 	octree_target.setInputCloud(target);
 	octree_target.addPointsFromInputCloud();
 
-	vector<OctreePointCloud<PointXYZ>::AlignedPointTVector> occupied_centers_source_treelevel;
-	vector<OctreePointCloud<PointXYZ>::AlignedPointTVector> occupied_centers_target_treelevel;
+	vector<OctreePointCloud<CloudData>::AlignedPointTVector> occupied_centers_source_treelevel;
+	vector<OctreePointCloud<CloudData>::AlignedPointTVector> occupied_centers_target_treelevel;
 	vector<float> source_tree_level_res;
 	vector<float> target_tree_level_res;
 
@@ -363,17 +382,17 @@ int main()
 
 	//单线程
 	//auto s1 = high_resolution_clock::now();
-	//GetOctreeLevelCentroidsVector<OctreePointCloud<PointXYZ>> level_center_source_vec(octree_source, occupied_centers_source_treelevel, source_tree_level_res);
+	//GetOctreeLevelCentroidsVector<OctreePointCloud<CloudData>> level_center_source_vec(octree_source, occupied_centers_source_treelevel, source_tree_level_res);
 	//auto s2 = high_resolution_clock::now();
-	//GetOctreeLevelCentroidsVector<OctreePointCloud<PointXYZ>> level_center_target_vec(octree_target, occupied_centers_target_treelevel, target_tree_level_res);
+	//GetOctreeLevelCentroidsVector<OctreePointCloud<CloudData>> level_center_target_vec(octree_target, occupied_centers_target_treelevel, target_tree_level_res);
 	//auto s3 = high_resolution_clock::now();
 	
 	////双线程
 	auto s1 = high_resolution_clock::now();
-	OctreeLevelContainer<OctreePointCloud<PointXYZ>> source_container(&octree_source, occupied_centers_source_treelevel, source_tree_level_res);
-	OctreeLevelContainer<OctreePointCloud<PointXYZ>> target_container(&octree_target, occupied_centers_target_treelevel, target_tree_level_res);
-	GetOctreeLevelCentroidsVector<OctreePointCloud<PointXYZ>> level_center_source_vec;
-	GetOctreeLevelCentroidsVector<OctreePointCloud<PointXYZ>> level_center_target_vec;
+	OctreeLevelContainer<OctreePointCloud<CloudData>> source_container(&octree_source, occupied_centers_source_treelevel, source_tree_level_res);
+	OctreeLevelContainer<OctreePointCloud<CloudData>> target_container(&octree_target, occupied_centers_target_treelevel, target_tree_level_res);
+	GetOctreeLevelCentroidsVector<OctreePointCloud<CloudData>> level_center_source_vec;
+	GetOctreeLevelCentroidsVector<OctreePointCloud<CloudData>> level_center_target_vec;
 	thread th1(level_center_source_vec, ref(source_container));
 	thread th2(level_center_target_vec, ref(target_container));
 	th1.join();
@@ -417,8 +436,8 @@ int main()
 #pragma omp parallel for num_threads(num_threads_) schedule(dynamic)
 	for (size_t i = 2; i < depth; i++)
 	{
-		PointCloud<PointXYZ>::Ptr source_temp(new PointCloud<PointXYZ>());
-		PointCloud<PointXYZ>::Ptr target_temp(new PointCloud<PointXYZ>());
+		PointCloud<CloudData>::Ptr source_temp(new PointCloud<CloudData>());
+		PointCloud<CloudData>::Ptr target_temp(new PointCloud<CloudData>());
 		
 		source_temp->height = 1;
 		source_temp->width = occupied_centers_source_treelevel[i].size();
@@ -438,7 +457,7 @@ int main()
 
 		//配准
 		// gicp
-		GeneralizedIterativeClosestPoint<PointXYZ, PointXYZ> pcl_gicp;
+		GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
 		pcl_gicp.setTransformationEpsilon(0.001);
 		pcl_gicp.setMaximumIterations(35);
 		
@@ -471,7 +490,7 @@ int main()
 	}
 
 
-	//PointCloud<PointXYZ>::Ptr aligned(new PointCloud<PointXYZ>());
+	//PointCloud<CloudData>::Ptr aligned(new PointCloud<CloudData>());
 	//pcl::transformPointCloud(*source, *aligned, trans);
 
 	drawRes(reg_score_times);

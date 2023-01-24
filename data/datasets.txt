@@ -1,0 +1,3 @@
+2011_09_26_drive_0005_sync
+downloaded from KITTI websites. Use city raw datasets which is also synced and rectified.
+160 frames in 16 seconds, frequency is 10Hz.
