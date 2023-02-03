@@ -42,6 +42,9 @@
     <ClCompile Include="kitti_bin_to_pcd.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="octree_rec.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="octree_level_voxel.h">
@@ -87,6 +90,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="fast_svgicp_impl.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="octree_rec_impl.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="octree_rec.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
