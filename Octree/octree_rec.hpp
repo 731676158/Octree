@@ -38,8 +38,23 @@ using namespace Eigen;
 namespace octReg {
 	template <typename CloudType>
 	class OctreeReg {
+	private:
+		class Message {
+			double reg_single_time;
+			double reg_single_score;
+		};
+
 	public:
-		void obtainCloud(PointCloud<CloudType>::Ptr source, PointCloud<CloudType>::Ptr target);
+		OctreeReg(int level = 0, double res = 0.0, int depth = 0)
+			: level_(level),
+				res_(res), 
+		    mess_(new Message()),
+				depth_(depth),
+				reg_(GeneralizedIterativeClosestPoint<CloudType, CloudType>()),
+		{}
+		void generatePoints(PointCloud<CloudType>::Ptr source, PointCloud<CloudType>::Ptr target);
+		double registration(PointCloud<CloudType>::Ptr source, PointCloud<CloudType>::Ptr target, Matrix4f& trans);
+		void createOctrees(PointCloud<CloudType>::Ptr source, PointCloud<CloudType>::Ptr target);
 		void setRes(double res) { res_ = res; }
 		void setLevel(int level) { level_ = level; }
 		int getLevel() { return level_; }
@@ -48,6 +63,13 @@ namespace octReg {
 
 		int level_;
 		double res_;
+
+		Message mess_;
+
+		vector<OctreePointCloud<CloudType>::AlignedPointVector> occupied_centers_source_treelevel;
+		vector<OctreePointCloud<CloudType>::AlignedPointVector> occupied_centers_target_treelevel;
+
+		int depth_;
 
 		// Registration method
 		//NormalDistributionsTransform<CloudData, CloudData> pcl_ndt;

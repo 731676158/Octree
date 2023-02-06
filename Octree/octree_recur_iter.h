@@ -1,4 +1,5 @@
 #pragma once
+#include <omp.h>
 #include <vector>
 #include <chrono>
 #include <algorithm>
@@ -195,6 +196,60 @@ namespace pcl {
 
 				vec = level_vec;
 				res_vec = res_level;
+			}
+			void operator()(Octree& oct, std::vector<AlignedPointTVector>& vec, size_t depth)
+			{
+				OctreeLevelIterator<Octree> it(&oct, 0);
+				Eigen::Vector3f min_pt;
+				Eigen::Vector3f max_pt;
+				min_pt.setZero();
+				max_pt.setZero();
+				int current_level = 0;
+
+				/*level_vec.resize(oct->getTreeDepth());
+				res_level.resize(oct->getTreeDepth());*/
+				level_vec.resize(depth);
+				res_level.resize(depth);
+
+				//auto ts1 = high_resolution_clock::now();
+				//size_t i = 0;
+				//while(it.current_state_)
+				while ((it.current_state_) && (it.current_state_->depth_ <= depth))
+				{
+					//i++;
+					//auto tt1 = high_resolution_clock::now();
+					pcl::PointXYZ p;// (new pcl::PointCloud<pcl::PointXYZ>());
+					current_level = it.current_state_->depth_;
+
+					if (current_level == 0)//根节点不存放格子了就
+					{
+						//auto root_it1 = high_resolution_clock::now();
+						++it;
+						//auto root_it2 = high_resolution_clock::now();
+						//double root_d = duration_cast<nanoseconds>(root_it2 - root_it1).count()/1e6;
+						//cout << "root_it++ time: " << root_d << " [msec]." << endl;
+						continue;
+					}
+
+					oct.genVoxelCenterFromOctreeKey(it.current_state_->key_, current_level, p);
+
+					level_vec[current_level - 1].push_back(p);
+					//auto tt2 = high_resolution_clock::now();
+					++it;         //如果是it++，时间要长很久！！！！
+					//auto tt3 = high_resolution_clock::now();
+					//double dd1 = duration_cast<nanoseconds>(tt2 - tt1).count() / 1e6;
+					//double dd2 = duration_cast<nanoseconds>(tt3 - tt2).count() / 1e6;
+					//cout << "time creating&pushing points: " << dd1 << " [msecs]." << endl;
+					//cout << "time iter ++ outside: " << dd2 << " [msecs]." << endl;
+
+				}
+
+				//auto ts2 = high_resolution_clock::now();
+				//double ds = duration_cast<nanoseconds>(ts2 - ts1).count() / 1e9;
+				//cout << "points: " << i << endl;
+				//cout << "time when reading points: " << ds << " [secs]." << endl;
+
+				vec = level_vec;
 			}
 			void operator()(OctreeLevelContainer<Octree>& str)
 			{
