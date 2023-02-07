@@ -20,9 +20,11 @@
 #include "fast_svgicp.hpp"
 
 #include "octree_recur_iter.h"
+#if defined(_WIN32)
 #include "plot.h"
+#endif
 
-#include "graph2d.h"
+
 #include <stdexcept>
 
 using namespace std;

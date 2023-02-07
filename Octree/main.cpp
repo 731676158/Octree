@@ -18,8 +18,9 @@
 #include "fast_vgicp.hpp"
 
 #include "octree_recur_iter.h"
+#if defined(_WIN32)
 #include "plot.h"
-
+#endif
 
 using namespace std;
 using namespace std::chrono;
@@ -56,7 +57,7 @@ void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<Po
 }
 
 
-//ÌåËØ½µ²ÉÑù
+//ï¿½ï¿½ï¿½Ø½ï¿½ï¿½ï¿½ï¿½ï¿½
 void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointXYZ>::Ptr& filted, float* res)
 {
 	//PointCloud<PointXYZ>::Ptr filted(new PointCloud<PointXYZ>);
@@ -67,7 +68,7 @@ void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointX
 	voxelgrid.filter(*filted);
 }
 
-//ndtÅä×¼
+//ndtï¿½ï¿½×¼
 template<typename Registration>
 double pcl_align(Registration& reg, const PointCloud<PointXYZ>::ConstPtr& source,
 	const PointCloud<PointXYZ>::ConstPtr& target, Matrix4f& trans)
@@ -97,13 +98,13 @@ double pcl_align(Registration& reg, const PointCloud<PointXYZ>::ConstPtr& source
 	cout << "time: " << d << " [secs]." << endl;
 
 
-	//NDTÓÃµ½
+	//NDTï¿½Ãµï¿½
 	//iter_times = reg.getFinalNumIteration();
 	//cout << "iter times: " << iter_times << endl;
-	//ÊÕÁ²Ìõ¼þ
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	//auto crit = reg.getConvergeCriteria();
 	//cout << "ConvergeCriteria: " << crit << endl;
-	//Åä×¼³É¼¨
+	//ï¿½ï¿½×¼ï¿½É¼ï¿½
 	score = reg.getFitnessScore();
 	cout << "score: " << score << "[m^2]." << endl;
 	trans = reg.getFinalTransformation();
@@ -124,15 +125,15 @@ double pcl_align(Registration& reg, const PointCloud<PointXYZ>::ConstPtr& source
 int main()
 {
 
-	/*********************************µãÔÆ¶ÁÈ¡ÓëÂË²¨*********************************************/
+	/*********************************ï¿½ï¿½ï¿½Æ¶ï¿½È¡ï¿½ï¿½ï¿½Ë²ï¿½*********************************************/
 
 	string sourcefile, targetfile;
 	//sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan1.pcd";
 	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan2.pcd";
 	sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\source.pcd";
 	targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\target.pcd";
-	//sourcefile = "D:\\Õâ¼¸ÌìµÄÂÒÆß°ËÔã\\Ò»×é50¸ö\\test1.pcd";
-	//targetfile = "D:\\Õâ¼¸ÌìµÄÂÒÆß°ËÔã\\Ò»×é50¸ö\\test2_noise.pcd";
+	//sourcefile = "D:\\ï¿½â¼¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß°ï¿½ï¿½ï¿½\\Ò»ï¿½ï¿½50ï¿½ï¿½\\test1.pcd";
+	//targetfile = "D:\\ï¿½â¼¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß°ï¿½ï¿½ï¿½\\Ò»ï¿½ï¿½50ï¿½ï¿½\\test2_noise.pcd";
 
 	PointCloud<PointXYZ>::Ptr source_pre(new PointCloud<PointXYZ>());
 	PointCloud<PointXYZ>::Ptr target_pre(new PointCloud<PointXYZ>());
@@ -159,9 +160,9 @@ int main()
 	cout << "Loaded " << source_pre->width * source_pre->height << " source points and " << target_pre->width * target_pre->height << " target points." << endl;
 	cout << "Source time: " << ds << " sec. Target time: " << dt << " sec." << endl;
 
-	/*********************************ÌåËØÂË²¨*********************************************/
+	/*********************************ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½*********************************************/
 
-	//½µ²ÉÑù
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	//float res[3] = { 0.05, 0.05, 0.05 };
 	PointCloud<PointXYZ>::Ptr source(new PointCloud<PointXYZ>());
 	//voxel_sample(source_pre, source, res);
@@ -171,7 +172,7 @@ int main()
 
 	//RegViewer(source_pre, source);
 
-	///*********************************½¨Á¢°Ë²æÊ÷*********************************************/
+	///*********************************ï¿½ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½*********************************************/
 	//OctreePointCloudVoxelCentroid<PointXYZ> octree_voxels(1.0);
 	//octree_voxels.setInputCloud(source);
 	//octree_voxels.addPointsFromInputCloud();
@@ -182,7 +183,7 @@ int main()
 
 	//cout << "occupied voxels: " << occupied_voxnum << endl;
 
-	/*********************************°´·Ö±æÂÊÑ­»·Åä×¼*********************************************/
+	/*********************************ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½×¼*********************************************/
 
 	PointCloud<PointXYZ>::Ptr last_source(new PointCloud<PointXYZ>(*source));
 
@@ -201,7 +202,7 @@ int main()
 
 	//for (double res = 5; res >= 0.05; res /= 2.0)// res -= interval)
 	//{
-	//	//Ô´µãÔÆ
+	//	//Ô´ï¿½ï¿½ï¿½ï¿½
 	//	OctreePointCloud<PointXYZ> octree_source(res);
 	//	octree_source.setInputCloud(last_source);
 	//	octree_source.addPointsFromInputCloud();
@@ -212,7 +213,7 @@ int main()
 	//	source_temp->is_dense = false;
 	//	source_temp->points = occupied_source_centroids;
 	//	
-	//	//Ä¿±êµãÔÆ
+	//	//Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½
 	//	OctreePointCloud<PointXYZ> octree_target(res);
 	//	octree_target.setInputCloud(target);
 	//	octree_target.addPointsFromInputCloud();
@@ -223,7 +224,7 @@ int main()
 	//	target_temp->is_dense = false;
 	//	target_temp->points = occupied_target_centroids;
 	//
-	//	//Åä×¼
+	//	//ï¿½ï¿½×¼
 	//	pcl_ndt.setResolution(5 * res);
 	//	pcl_ndt.setTransformationEpsilon(0.005 * res);
 	//	Matrix4f trans_iter = Matrix4f::Identity();
@@ -233,7 +234,7 @@ int main()
 	//	trans *= trans_iter;
 	//}
 
-		/*********************************°Ë²æÊ÷½Úµã¹¹½¨*********************************************/
+		/*********************************ï¿½Ë²ï¿½ï¿½ï¿½ï¿½Úµã¹¹ï¿½ï¿½*********************************************/
 
 	//double res_octree = 0.05;
 	//OctreePointCloud<PointXYZ> octree_source(res_octree);
@@ -257,14 +258,14 @@ int main()
 	//target_tree_level_res.resize(depth);
 
 
-	//µ¥Ïß³Ì
+	//ï¿½ï¿½ï¿½ß³ï¿½
 	//auto s1 = high_resolution_clock::now();
 	//GetOctreeLevelCentroidsVector<OctreePointCloud<PointXYZ>> level_center_source_vec(octree_source, occupied_centers_source_treelevel, source_tree_level_res);
 	//auto s2 = high_resolution_clock::now();
 	//GetOctreeLevelCentroidsVector<OctreePointCloud<PointXYZ>> level_center_target_vec(octree_target, occupied_centers_target_treelevel, target_tree_level_res);
 	//auto s3 = high_resolution_clock::now();
 
-	////Ë«Ïß³Ì
+	////Ë«ï¿½ß³ï¿½
 	//auto s1 = high_resolution_clock::now();
 	//OctreeLevelContainer<OctreePointCloud<PointXYZ>> source_container(&octree_source, occupied_centers_source_treelevel, source_tree_level_res);
 	//OctreeLevelContainer<OctreePointCloud<PointXYZ>> target_container(&octree_target, occupied_centers_target_treelevel, target_tree_level_res);
@@ -324,13 +325,13 @@ int main()
 
 	//	pcl::transformPointCloud(*source_temp, *source_temp, trans);
 
-	//	//Åä×¼
+	//	//ï¿½ï¿½×¼
 	//	vgicp.setResolution(max(static_cast<float>(0.05), target_tree_level_res[i]));
 	//	vgicp.setNumThreads(1);
-	//	vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //¾ÍÏÈÒÀÕÕÕâ¸öÉè¶¨×îÐ¡µÄãÐÖµ°É
+	//	vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è¶¨ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½
 	//	trans_iter = Matrix4f::Identity();
 
-	//	//if (i == 6) trans_iter = init_guess;  //µÚÒ»´Î½øÀ´Ìí¼ÓÒ»¸ö³õÊ¼Î»×Ë¹À¼Æ
+	//	//if (i == 6) trans_iter = init_guess;  //ï¿½ï¿½Ò»ï¿½Î½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ê¼Î»ï¿½Ë¹ï¿½ï¿½ï¿½
 
 	//	reg_this_time = pcl_align(vgicp, source_temp, target_temp, trans_iter);
 	//	reg_times.push_back(reg_this_time);
@@ -344,7 +345,7 @@ int main()
 
 	//RegViewer(source, target, aligned);
 
-	/*********************************¿ÉÊÓ»¯*********************************************/
+	/*********************************ï¿½ï¿½ï¿½Ó»ï¿½*********************************************/
 	//vector<double> reg_times;
 	//reg_times.push_back(0.01);
 	//reg_times.push_back(0.1);
@@ -361,10 +362,10 @@ int main()
 	//plot<double, int>(reg_times);
 	//Py_Finalize();
 	//system("pause");
-	/*********************************µ÷ÊÔ*********************************************/
+	/*********************************ï¿½ï¿½ï¿½ï¿½*********************************************/
 	//cout << "--- pcl_ndt ---" << endl;
 	//NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
-	vgicp.setResolution(6);  //10¿ÉÒÔ
+	vgicp.setResolution(6);  //10ï¿½ï¿½ï¿½ï¿½
 	vgicp.setNumThreads(1);
 	vgicp.setTransformationEpsilon(0.001);
 	//pcl_ndt.setMaximumIterations(35);
