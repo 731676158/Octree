@@ -38,6 +38,9 @@ list(REMOVE_ITEM ALL_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/Octree/octree_rec.cpp)
 add_executable(octreeTest Octree/octreeTest_main.cpp ${ALL_SRCS})
 target_link_libraries(octreeTest ${PCL_LIBRARIES} )
 
+add_executable(singleTest Octree/Comparision_main.cpp ${ALL_SRCS})
+target_link_libraries(singleTest ${PCL_LIBRARIES} )
+
 add_executable(kitti_btop Octree/kitti_bin_to_pcd.cpp ${ALL_SRCS})
 target_link_libraries(kitti_btop ${PCL_LIBRARIES} )
 

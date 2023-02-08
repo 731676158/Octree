@@ -367,7 +367,7 @@ int main()
 	// ��������ӣ���Ϊ���ͨ���˲������о����ֱ��ʣ��ǻ���Ҫһ������������Ĳ���ȥѰ�����е㼯�о�������ĵ㣬
 	// ��һ�������ʱ
 	// �ֱ��ʱ�����ڵ㼯֮����ڵ��������С����
-	double res_octree = 0.01;
+	double res_octree = 0.1;
 	OctreePointCloud<CloudData> octree_source(res_octree);
 	octree_source.setInputCloud(last_source);
 	octree_source.addPointsFromInputCloud();
@@ -442,8 +442,8 @@ int main()
 	//RegViewer(source, target, source_temp);
 
 	int num_threads_ = omp_get_num_procs();
-#pragma omp parallel for num_threads(num_threads_) schedule(dynamic)
-	for (size_t i = 2; i < depth; i++)
+// #pragma omp parallel for num_threads(num_threads_) schedule(dynamic)
+	for (size_t i = 4; i < depth; i++)
 	{
 		PointCloud<CloudData>::Ptr source_temp(new PointCloud<CloudData>());
 		PointCloud<CloudData>::Ptr target_temp(new PointCloud<CloudData>());
@@ -467,7 +467,7 @@ int main()
 		//��׼
 		// gicp
 		GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
-		pcl_gicp.setTransformationEpsilon(0.001);
+		pcl_gicp.setTransformationEpsilon(0.01);
 		pcl_gicp.setMaximumIterations(35);
 		
 		// ndt

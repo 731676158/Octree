@@ -19,9 +19,10 @@
 #include "fast_svgicp.hpp"
 
 #include "octree_recur_iter.h"
-#include "plot.h"
+
 
 #if defined(_WIN32)
+#include "plot.h"
 #include "graph2d.h"
 #endif
 
@@ -121,11 +122,11 @@ pair<double, double> pcl_align(Registration& reg, const PointCloud<PointXYZ>::Co
 	//reg.align(*aligned, init_guess);
 	reg.align(*aligned, trans);
 	auto t2 = high_resolution_clock::now();
-	double d = duration_cast<nanoseconds>(t2 - t1).count() / 1e9;
+	double d = duration_cast<nanoseconds>(t2 - t1).count() / 1e6;
 
 	cout << "Aligned " << source->width * source->height << " source points and " << target->width * target->height << " target points at this level." << endl;
 
-	cout << "time: " << d << " [secs]." << endl;
+	cout << "time: " << d << " [msecs]." << endl;
 
 
 	//NDT�õ�
@@ -199,16 +200,19 @@ int main()
 	/*********************************���ƶ�ȡ���˲�*********************************************/
 
 	string sourcefile, targetfile;
-	//sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan2.pcd";
-	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan1.pcd";
-	//sourcefile = "c:\\files\\point_cloud\\codes\\prt\\lectureprt\\treesandknn\\octree\\room_scan\\source.pcd";
-	//targetfile = "c:\\files\\point_cloud\\codes\\prt\\lectureprt\\treesandknn\\octree\\room_scan\\target.pcd";
-	//sourcefile = "E:\\�⼸������߰���\\map_uav2.pcd";
-	//targetfile = "E:\\�⼸������߰���\\map_uav1.pcd";
-	/*sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000001.pcd";
-	targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\data\\0000000002.pcd";*/
-	//sourcefile = "C:\\files\\codes\\git\\Octree\\data\\0000000001.pcd";
-	//targetfile = "C:\\files\\codes\\git\\Octree\\data\\0000000002.pcd";
+#if defined(_WIN32)
+	//sourcefile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan1.pcd";
+	//targetfile = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\room_scan\\room_scan2.pcd";
+	//sourcefile = "C:\\files\\codes\\git\\Octree\\source.pcd";
+	//targetfile = "C:\\files\\codes\\git\\Octree\\target.pcd";
+	//sourcefile = "E:\\�⼸������߰���\\һ��50��\\test1.pcd";
+	//targetfile = "E:\\�⼸������߰���\\һ��50��\\test2_noise.pcd";
+	sourcefile = "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\0000000010.pcd";
+	targetfile = "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\0000000000.pcd";
+#elif defined(__linux__)
+	sourcefile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000005.pcd";
+	targetfile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000000.pcd";
+#endif
 
 	PointCloud<PointXYZ>::Ptr source_pre(new PointCloud<PointXYZ>());
 	PointCloud<PointXYZ>::Ptr target_pre(new PointCloud<PointXYZ>());
@@ -250,16 +254,16 @@ int main()
 
 	/***********************************�˲��˲���**************************************************/
 	
-	NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
+	//NormalDistributionsTransform<PointXYZ, PointXYZ> pcl_ndt;
 	//IterativeClosestPoint<PointXYZ, PointXYZ> pcl_icp;
 	//fast_gicp::FastVGICP<PointXYZ, PointXYZ> vgicp;
 	//fast_gicp::FastSVGICP<PointXYZ, PointXYZ> svgicp;
-	//GeneralizedIterativeClosestPoint<PointXYZ, PointXYZ> pcl_gicp;
+	GeneralizedIterativeClosestPoint<PointXYZ, PointXYZ> pcl_gicp;
 
 	////ndt
-	pcl_ndt.setResolution(0.1);     //ע��ֱ���
-	pcl_ndt.setMaximumIterations(35);
-	pcl_ndt.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
+	// pcl_ndt.setResolution(0.1);     //ע��ֱ���
+	// pcl_ndt.setMaximumIterations(35);
+	// pcl_ndt.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
 
 	//vgicp
 	//vgicp.setResolution(1.0);     //ע��ֱ���
@@ -279,8 +283,8 @@ int main()
 	//pcl_icp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
 
 	////gicp
-	//pcl_gicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
-
+	pcl_gicp.setTransformationEpsilon(0.01);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
+	pcl_gicp.setMaximumIterations(35);
 	/***********************************************************************************************/
 
 	vector<pair<double, double>> res_scts;
@@ -297,11 +301,11 @@ int main()
 	//pcl::transformPointCloud(*source_pre, *guessed, init_guess);
 
 	// ��ͼ
-	res_scts.push_back(pcl_align(pcl_ndt, source_pre, target_pre, trans));
+	//res_scts.push_back(pcl_align(pcl_ndt, source_pre, target_pre, trans));
 	//res_scts.push_back(pcl_align(vgicp, source_pre, target_pre, trans));
 	//res_scts.push_back(pcl_align(svgicp, source_pre, target_pre, trans));
 	//res_scts.push_back(pcl_align(pcl_icp, guessed, target_pre, trans));
-	//res_scts.push_back(pcl_align(pcl_gicp, guessed, target_pre, trans));
+	res_scts.push_back(pcl_align(pcl_gicp, source_pre, target_pre, trans));
 	//drawRes(res_scts);
 
 	//Matrix4f trans = Matrix4f::Identity();
