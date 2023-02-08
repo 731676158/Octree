@@ -74,31 +74,29 @@ void print_score_time(vector<pair<double, double>>& res)
 	}
 }
 
-void RegViewer(const PointCloud<CloudData>::ConstPtr& source, const PointCloud<CloudData>::ConstPtr& target)
+void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<PointXYZ>::ConstPtr& target)
 {
 	std::shared_ptr<PCLVisualizer> viewer(new PCLVisualizer("source(red),target(green)"));
 	viewer->setBackgroundColor(255, 255, 255);
-	PointCloudColorHandlerCustom<CloudData> source_cloud_handler(source, 255, 0, 0);
-	PointCloudColorHandlerCustom<CloudData> target_cloud_handler(target, 0, 255, 0);
-	viewer->addPointCloud<CloudData>(source, source_cloud_handler, "source");
-	viewer->addPointCloud<CloudData>(target, target_cloud_handler, "target");
+	PointCloudColorHandlerCustom<PointXYZ> source_cloud_handler(source, 255, 0, 0);
+	PointCloudColorHandlerCustom<PointXYZ> target_cloud_handler(target, 0, 255, 0);
+	viewer->addPointCloud<PointXYZ>(source, source_cloud_handler, "source");
+	viewer->addPointCloud<PointXYZ>(target, target_cloud_handler, "target");
 	viewer->spin();
 }
 
-void RegViewer(const PointCloud<CloudData>::ConstPtr& source, const PointCloud<CloudData>::ConstPtr& target, const PointCloud<CloudData>::ConstPtr& aligned)
+void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<PointXYZ>::ConstPtr& target, const PointCloud<PointXYZ>::ConstPtr& aligned)
 {
 	std::shared_ptr<PCLVisualizer> viewer(new PCLVisualizer("source(red),target(green),aligned(blue)"));
 	viewer->setBackgroundColor(255, 255, 255);
-	PointCloudColorHandlerCustom<CloudData> source_cloud_handler(source, 255, 0, 0);
-	PointCloudColorHandlerCustom<CloudData> target_cloud_handler(target, 0, 255, 0);
-	PointCloudColorHandlerCustom<CloudData> aligned_cloud_handler(aligned, 0, 0, 255);
-	viewer->addPointCloud<CloudData>(source, source_cloud_handler, "source");
-	viewer->addPointCloud<CloudData>(target, target_cloud_handler, "target");
-	viewer->addPointCloud<CloudData>(aligned, aligned_cloud_handler, "aligned");
-	viewer->addCoordinateSystem(10.0, "reference", 0);
+	PointCloudColorHandlerCustom<PointXYZ> source_cloud_handler(source, 255, 0, 0);
+	PointCloudColorHandlerCustom<PointXYZ> target_cloud_handler(target, 0, 255, 0);
+	PointCloudColorHandlerCustom<PointXYZ> aligned_cloud_handler(aligned, 0, 0, 255);
+	viewer->addPointCloud<PointXYZ>(source, source_cloud_handler, "source");
+	viewer->addPointCloud<PointXYZ>(target, target_cloud_handler, "target");
+	viewer->addPointCloud<PointXYZ>(aligned, aligned_cloud_handler, "aligned");
 	viewer->spin();
 }
-
 
 //���ؽ�����
 void voxel_sample(const PointCloud<CloudData>::ConstPtr& cloud, PointCloud<CloudData>::Ptr& filted, float* res)
@@ -114,9 +112,14 @@ void voxel_sample(const PointCloud<CloudData>::ConstPtr& cloud, PointCloud<Cloud
 //ndt��׼
 template<typename Registration>
 pair<double,double> pcl_align(Registration& reg, const PointCloud<CloudData>::ConstPtr& source,
-	const PointCloud<CloudData>::ConstPtr& target, Matrix4f& trans)
+	const PointCloud<CloudData>::ConstPtr& target, Matrix4f& trans, int level = -1)
 {
-	cout << "---------" << reg_times << "----------" << endl;
+	if (level == -1)
+	{
+		cout << "- Full registration" << endl;
+	} else {
+		cout << "- " << level << endl;
+	}
 	PointCloud<CloudData>::Ptr aligned(new PointCloud<CloudData>());
 	double score = 0.0;
 
@@ -141,13 +144,14 @@ pair<double,double> pcl_align(Registration& reg, const PointCloud<CloudData>::Co
 	auto t2 = high_resolution_clock::now();
 	double d = duration_cast<nanoseconds>(t2 - t1).count() / 1e6;
 
-	cout << "Aligned " << source->width * source->height << " source points and " << target->width * target->height << " target points at this level." << endl;
+	cout << "source points: " << source->width * source->height << endl;
+	cout << "target points: " << target->width * target->height << endl;
 
 	cout << "time: " << d << " [msecs]." << endl;
 
 	//GICP�õ�
-	iter_times = reg.getMaximumOptimizerIterations();
-	cout << "iter times:" << iter_times << endl;
+	//iter_times = reg.getMaximumOptimizerIterations();
+	//cout << "iter times:" << iter_times << endl;
 	//NDT�õ�
 	//iter_times = reg.getFinalNumIteration();
 	//cout << "iter times: " << iter_times << endl;
@@ -158,7 +162,7 @@ pair<double,double> pcl_align(Registration& reg, const PointCloud<CloudData>::Co
 	score = reg.getFitnessScore();
 	cout << "score: " << score << "[m^2]." << endl;
 	trans = reg.getFinalTransformation();
-	cout <<"transformation:" << endl << trans << endl;
+	//cout <<"transformation:" << endl << trans << endl;
 	string aligned_name,rtime;
 	rtime = to_string(reg_times);
 
@@ -166,7 +170,7 @@ pair<double,double> pcl_align(Registration& reg, const PointCloud<CloudData>::Co
 	//aligned_name = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\test_aligned" + rtime + ".pcd";
 	//savePCDFile(aligned_name, *aligned);
 
-	//RegViewer(source, target, aligned);
+	RegViewer(source, target, aligned);
 	//RegViewer(guessed, target, aligned);
 
 	++reg_times;
@@ -232,7 +236,7 @@ int main()
 	sourcefile = "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\0000000010.pcd";
 	targetfile = "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\0000000000.pcd";
 #elif defined(__linux__)
-	sourcefile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000010.pcd";
+	sourcefile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000015.pcd";
 	targetfile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000000.pcd";
 #endif
 
@@ -264,7 +268,7 @@ int main()
 	cout << "---target cloud messages: " << endl;
 	CloudMessages(target_pre);
 
-	float res[3] = { 0.001, 0.001, 0.001 };
+	float res[3] = { 0.1, 0.1, 0.1 };
 	voxel_sample(source_pre, source_pre, res);
 	voxel_sample(target_pre, target_pre, res);
 
@@ -308,7 +312,7 @@ int main()
 	
 	PointCloud<CloudData>::Ptr last_source(new PointCloud<CloudData>(*source));
 
-	cout << "--- pcl_ndt ---" << endl;
+	cout << "--- pcl_gicp ---" << endl;
 	//NormalDistributionsTransform<CloudData, CloudData> pcl_ndt;
 	//IterativeClosestPoint<CloudData, CloudData> pcl_icp;
 	GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
@@ -443,7 +447,7 @@ int main()
 
 	int num_threads_ = omp_get_num_procs();
 // #pragma omp parallel for num_threads(num_threads_) schedule(dynamic)
-	for (size_t i = 4; i < depth; i++)
+	for (size_t i = 5; i < depth; i++)
 	{
 		PointCloud<CloudData>::Ptr source_temp(new PointCloud<CloudData>());
 		PointCloud<CloudData>::Ptr target_temp(new PointCloud<CloudData>());
@@ -458,22 +462,26 @@ int main()
 		target_temp->is_dense = false;
 		target_temp->points = occupied_centers_target_treelevel[i];
 
-		cout << "Level " << i << " source points: " << occupied_centers_source_treelevel[i].size() << " target points: " << occupied_centers_target_treelevel[i].size() << endl;
+		// cout << "Level " << i << " source points: " << occupied_centers_source_treelevel[i].size() << " target points: " << occupied_centers_target_treelevel[i].size() << endl;
 
 		//������һ���ǲ��ݽ�ѭ����׼
 		// ������һ����ÿ��ֱ���׼
-		//pcl::transformPointCloud(*source_temp, *source_temp, trans);
+		if (trans!= Matrix4f::Identity())
+		{
+			pcl::transformPointCloud(*source_temp, *source_temp, trans);
+		}
 
 		//��׼
 		// gicp
-		GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
+		// GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
 		pcl_gicp.setTransformationEpsilon(0.01);
 		pcl_gicp.setMaximumIterations(35);
 		
 		// ndt
 		//pcl_ndt.setResolution(max(static_cast<float>(0.05) ,target_tree_level_res[i]));     //ע��ֱ���
-		//pcl_ndt.setNumThreads(1);
-		//pcl_ndt.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
+		//pcl_ndt.setNumThreads(8);
+		//pcl_ndt.setResolution(0.1);
+		//pcl_ndt.setTransformationEpsilon(0.01);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
 
 		//svgicp
 		//svgicp.setSourceResolution(0.01);
@@ -488,16 +496,25 @@ int main()
 		//if (i == 6) trans_iter = init_guess;  //��һ�ν�������һ����ʼλ�˹���
 		
 		
-		pair<double, double> reg_this_st = pcl_align(pcl_gicp, source_temp, target_temp, trans_iter);
+		pair<double, double> reg_this_st = pcl_align(pcl_gicp, source_temp, target_temp, trans_iter, i);
 		//reg_this_st = pcl_align(pcl_ndt, source_temp, target_temp, trans_iter);
 		//reg_this_st = pcl_align(svgicp, source_temp, target_temp, trans_iter);
 
 		//reg_score_times.push_back(reg_this_st);
 		reg_score_times[i] = reg_this_st;
 		
-		//trans *= trans_iter;
+		trans *= trans_iter;
 	}
 
+	// cout << "Full points:" << endl;
+	// GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
+	// pcl_gicp.setTransformationEpsilon(0.01);
+	// pcl_gicp.setMaximumIterations(35);
+	// pcl_align(pcl_gicp, last_source, target	// cout << "Full points:" << endl;
+	// GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
+	// pcl_gicp.setTransformationEpsilon(0.01);
+	// pcl_gicp.setMaximumIterations(35);
+	// pcl_align(pcl_gicp, last_source, target, trans);, trans);
 
 	//PointCloud<CloudData>::Ptr aligned(new PointCloud<CloudData>());
 	//pcl::transformPointCloud(*source, *aligned, trans);

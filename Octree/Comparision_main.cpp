@@ -210,7 +210,7 @@ int main()
 	sourcefile = "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\0000000010.pcd";
 	targetfile = "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\0000000000.pcd";
 #elif defined(__linux__)
-	sourcefile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000005.pcd";
+	sourcefile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000015.pcd";
 	targetfile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000000.pcd";
 #endif
 
