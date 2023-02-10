@@ -153,8 +153,8 @@ pair<double,double> pcl_align(Registration& reg, const PointCloud<CloudData>::Co
 	//iter_times = reg.getMaximumOptimizerIterations();
 	//cout << "iter times:" << iter_times << endl;
 	//NDT�õ�
-	//iter_times = reg.getFinalNumIteration();
-	//cout << "iter times: " << iter_times << endl;
+	iter_times = reg.getFinalNumIteration();
+	cout << "iter times: " << iter_times << endl;
 	//��������
 	//auto crit = reg.getConvergeCriteria();
 	//cout << "ConvergeCriteria: " << crit << endl;
@@ -236,7 +236,7 @@ int main()
 	sourcefile = "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\0000000010.pcd";
 	targetfile = "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\0000000000.pcd";
 #elif defined(__linux__)
-	sourcefile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000015.pcd";
+	sourcefile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000010.pcd";
 	targetfile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000000.pcd";
 #endif
 
@@ -313,9 +313,9 @@ int main()
 	PointCloud<CloudData>::Ptr last_source(new PointCloud<CloudData>(*source));
 
 	cout << "--- pcl_gicp ---" << endl;
-	//NormalDistributionsTransform<CloudData, CloudData> pcl_ndt;
+	NormalDistributionsTransform<CloudData, CloudData> pcl_ndt;
 	//IterativeClosestPoint<CloudData, CloudData> pcl_icp;
-	GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
+	//GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
 	//fast_gicp::FastVGICP<CloudData, CloudData> vgicp;
 	//fast_gicp::FastSVGICP<CloudData, CloudData> svgicp;
 
@@ -447,7 +447,7 @@ int main()
 
 	int num_threads_ = omp_get_num_procs();
 // #pragma omp parallel for num_threads(num_threads_) schedule(dynamic)
-	for (size_t i = 5; i < depth; i++)
+	for (size_t i = 6; i < depth; i++)
 	{
 		PointCloud<CloudData>::Ptr source_temp(new PointCloud<CloudData>());
 		PointCloud<CloudData>::Ptr target_temp(new PointCloud<CloudData>());
@@ -466,44 +466,45 @@ int main()
 
 		//������һ���ǲ��ݽ�ѭ����׼
 		// ������һ����ÿ��ֱ���׼
-		if (trans!= Matrix4f::Identity())
-		{
-			pcl::transformPointCloud(*source_temp, *source_temp, trans);
-		}
+		// if (trans!= Matrix4f::Identity())
+		// {
+		// 	pcl::transformPointCloud(*source_temp, *source_temp, trans);
+		// }
 
 		//��׼
 		// gicp
 		// GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
-		pcl_gicp.setTransformationEpsilon(0.01);
-		pcl_gicp.setMaximumIterations(35);
+		//pcl_gicp.setTransformationEpsilon(0.01);
+		//pcl_gicp.setMaximumIterations(35);
 		
 		// ndt
-		//pcl_ndt.setResolution(max(static_cast<float>(0.05) ,target_tree_level_res[i]));     //ע��ֱ���
+		pcl_ndt.setResolution(target_tree_level_res[i] * 10);     //ע��ֱ���
 		//pcl_ndt.setNumThreads(8);
-		//pcl_ndt.setResolution(0.1);
-		//pcl_ndt.setTransformationEpsilon(0.01);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
+		//pcl_ndt.setResolution(3.0);
+		pcl_ndt.setMaximumIterations(70);
+		pcl_ndt.setTransformationEpsilon(0.005);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
 
-		//svgicp
-		//svgicp.setSourceResolution(0.01);
-		//svgicp.setTargetResolution(0.05);     //ע��ֱ���
-		//svgicp.setNumThreads(8);
-		//svgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
-		//svgicp.setRotationEpsilon(0.001);
-		//svgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
+		//vgicp
+		//vgicp.setResolution(2.0);     //ע��ֱ���
+		//vgicp.setResolution(target_tree_level_res[i]*4);
+		//vgicp.setNumThreads(8);
+		//vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
+		//vgicp.setRotationEpsilon(0.001);
+		//vgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
 
 		Matrix4f trans_iter = Matrix4f::Identity();
 		
 		//if (i == 6) trans_iter = init_guess;  //��һ�ν�������һ����ʼλ�˹���
 		
 		
-		pair<double, double> reg_this_st = pcl_align(pcl_gicp, source_temp, target_temp, trans_iter, i);
+		pair<double, double> reg_this_st = pcl_align(pcl_ndt, source_temp, target_temp, trans_iter, i);
 		//reg_this_st = pcl_align(pcl_ndt, source_temp, target_temp, trans_iter);
 		//reg_this_st = pcl_align(svgicp, source_temp, target_temp, trans_iter);
 
 		//reg_score_times.push_back(reg_this_st);
 		reg_score_times[i] = reg_this_st;
 		
-		trans *= trans_iter;
+		//trans *= trans_iter;
 	}
 
 	// cout << "Full points:" << endl;

@@ -1,0 +1,235 @@
+# independently reg:
+00-10
+## gicp:
+### pcl
+source: 65203
+target: 1223398
+time:88430ms
+score:1.07576m^2
+### octree
+- 5
+source points: 335
+target points: 312
+time: 149.332 [msecs].
+score: 18.5366[m^2].
+- 6
+source points: 812
+target points: 813
+time: 1138.47 [msecs].
+score: 6.8886[m^2].
+- 7
+source points: 2362
+target points: 2368
+time: 3492.04 [msecs].
+score: 4.27474[m^2].
+- 8
+source points: 6526
+target points: 6476
+time: 7072.71 [msecs].
+score: 3.19272[m^2].
+- 9
+source points: 16364
+target points: 15976
+time: 21348.9 [msecs].
+score: 2.31843[m^2].
+- 10
+source points: 34155
+target points: 33475
+time: 39621.8 [msecs].
+score: 1.65238[m^2].
+- 11
+source points: 55511
+target points: 54717
+time: 82378.2 [msecs].
+score: 1.20095[m^2].
+Full points:
+- Full registration
+source points: 65203
+target points: 64423
+time: 75743.5 [msecs].
+score: 1.07688[m^2].
+
+## vgicp:
+### single:
+source points: 65203
+target points: 123398
+time: 17307.9 [msecs].
+score: 1.07548[m^2].
+### octree:(resolution*4)
+- 5
+Converged result: Rotation delta: 0.000441006 Transform delta: 0.00986118
+source points: 335
+target points: 312
+time: 66.2227 [msecs].
+score: 16.5512[m^2].
+- 6
+Converged result: Rotation delta: 0.000213724 Transform delta: 0.0319849
+source points: 812
+target points: 813
+time: 164.824 [msecs].
+score: 6.7113[m^2].
+- 7
+Converged result: Rotation delta: 9.07062e-05 Transform delta: 0.00176055
+source points: 2362
+target points: 2368
+time: 316.462 [msecs].
+score: 4.35569[m^2].
+- 8
+Converged result: Rotation delta: 0.00166701 Transform delta: 0.546468
+source points: 6526
+target points: 6476
+time: 717.274 [msecs].
+score: 3.1957[m^2].
+- 9(resolution*6)
+Converged result: Rotation delta: 0.00811523 Transform delta: 0.341321
+source points: 16364
+target points: 15976
+time: 3463.23 [msecs].
+score: 2.31906[m^2].
+- 10
+Converged result: Rotation delta: 0.00871355 Transform delta: 0.730564
+source points: 34155
+target points: 33475
+time: 8052.05 [msecs].
+score: 1.65388[m^2].
+- 11
+Converged result: Rotation delta: 0.0143806 Transform delta: 0.791843
+source points: 55511
+target points: 54717
+time: 9798.91 [msecs].
+score: 1.20251[m^2].
+
+## ndt
+source points: 65048
+target points: 123398
+time: 513588 [msecs].
+iter times: 18
+score: 0.358431[m^2].
+### Octree:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# recursively reg:
+00-15
+## gicp:
+### octree
+- 5
+source points: 228
+target points: 312
+time: 63.8802 [msecs].
+score: 33.0049[m^2].
+- 6
+source points: 927
+target points: 813
+time: 2004.79 [msecs].
+score: 11.6586[m^2].
+- 7
+source points: 2433
+target points: 2368
+time: 2593.56 [msecs].
+score: 7.08617[m^2].
+- 8
+source points: 6576
+target points: 6476
+time: 3691.66 [msecs].
+score: 5.0079[m^2].
+- 9
+source points: 16223
+target points: 15976
+time: 4607.16 [msecs].
+score: 3.46368[m^2].
+- 10
+source points: 34383
+target points: 33475
+time: 9487.68 [msecs].
+score: 2.31871[m^2].
+- 11
+source points: 55851
+target points: 54717
+time: 7861.84 [msecs].
+score: 1.66245[m^2].
+### pcl
+source: 65175
+target: 123398
+time: 23213.6[msecs]
+score: 6.7809[m^2]
+
+## vgicp:
+### vgicp:
+source points: 65175
+target points: 123398
+time: 21635.5 [msecs].
+score: 1.86602[m^2].
+
+### octree:
+- 5
+Converged result: Rotation delta: 0.000441006 Transform delta: 0.00986118
+source points: 335
+target points: 312
+time: 61.7852 [msecs].
+score: 16.5512[m^2].
+- 6
+Converged result: Rotation delta: 0.000700774 Transform delta: 0.0175524
+source points: 812
+target points: 813
+time: 127.413 [msecs].
+score: 7.00186[m^2].
+- 7
+Converged result: Rotation delta: 8.3021e-05 Transform delta: 0.00268275
+source points: 2362
+target points: 2368
+time: 348.331 [msecs].
+score: 4.38643[m^2].
+- 8
+Converged result: Rotation delta: 0.0358985 Transform delta: 0.368561
+source points: 6526
+target points: 6476
+time: 493.818 [msecs].
+score: 3.43151[m^2].
+- 9
+Converged result: Rotation delta: 0.00533262 Transform delta: 0.309124
+source points: 16364
+target points: 15976
+time: 926.099 [msecs].
+score: 2.31607[m^2].
+- 10
+Converged result: Rotation delta: 0.00207536 Transform delta: 0.312135
+source points: 34155
+target points: 33475
+time: 1455.41 [msecs].
+score: 1.65392[m^2].
+- 11
+Converged result: Rotation delta: 0.0109387 Transform delta: 0.179239
+source points: 55511
+target points: 54717
+time: 1776.85 [msecs].
+score: 1.20252[m^2].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
