@@ -63,23 +63,23 @@ target points: 312
 time: 66.2227 [msecs].
 score: 16.5512[m^2].
 - 6
-Converged result: Rotation delta: 0.000213724 Transform delta: 0.0319849
+Converged result: Rotation delta: 0.00123789 Transform delta: 0.0940214
 source points: 812
 target points: 813
-time: 164.824 [msecs].
-score: 6.7113[m^2].
+time: 113.296 [msecs].
+score: 7.09469[m^2].
 - 7
-Converged result: Rotation delta: 9.07062e-05 Transform delta: 0.00176055
+Converged result: Rotation delta: 6.84412e-05 Transform delta: 0.00282115
 source points: 2362
 target points: 2368
-time: 316.462 [msecs].
-score: 4.35569[m^2].
+time: 249.703 [msecs].
+score: 4.36023[m^2].
 - 8
-Converged result: Rotation delta: 0.00166701 Transform delta: 0.546468
+Converged result: Rotation delta: 0.000526681 Transform delta: 0.0634525
 source points: 6526
 target points: 6476
-time: 717.274 [msecs].
-score: 3.1957[m^2].
+time: 674.968 [msecs].
+score: 3.19572[m^2].
 - 9(resolution*6)
 Converged result: Rotation delta: 0.00811523 Transform delta: 0.341321
 source points: 16364
@@ -87,17 +87,18 @@ target points: 15976
 time: 3463.23 [msecs].
 score: 2.31906[m^2].
 - 10
-Converged result: Rotation delta: 0.00871355 Transform delta: 0.730564
+Converged result: Rotation delta: 0.00337373 Transform delta: 0.243488
 source points: 34155
 target points: 33475
-time: 8052.05 [msecs].
-score: 1.65388[m^2].
+time: 7502.52 [msecs].
+score: 1.6539[m^2].
 - 11
-Converged result: Rotation delta: 0.0143806 Transform delta: 0.791843
+Converged result: Rotation delta: 0.0129127 Transform delta: 0.709255
 source points: 55511
 target points: 54717
-time: 9798.91 [msecs].
-score: 1.20251[m^2].
+time: 8927.55 [msecs].
+score: 1.2025[m^2].
+
 
 ## ndt
 source points: 65048

@@ -153,8 +153,8 @@ pair<double,double> pcl_align(Registration& reg, const PointCloud<CloudData>::Co
 	//iter_times = reg.getMaximumOptimizerIterations();
 	//cout << "iter times:" << iter_times << endl;
 	//NDT�õ�
-	iter_times = reg.getFinalNumIteration();
-	cout << "iter times: " << iter_times << endl;
+	//iter_times = reg.getFinalNumIteration();
+	//cout << "iter times: " << iter_times << endl;
 	//��������
 	//auto crit = reg.getConvergeCriteria();
 	//cout << "ConvergeCriteria: " << crit << endl;
@@ -315,8 +315,8 @@ int main()
 	cout << "--- pcl_gicp ---" << endl;
 	NormalDistributionsTransform<CloudData, CloudData> pcl_ndt;
 	//IterativeClosestPoint<CloudData, CloudData> pcl_icp;
-	//GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
-	//fast_gicp::FastVGICP<CloudData, CloudData> vgicp;
+	GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
+	fast_gicp::FastVGICP<CloudData, CloudData> vgicp;
 	//fast_gicp::FastSVGICP<CloudData, CloudData> svgicp;
 
 	Matrix4f trans = Matrix4f::Identity();
@@ -475,20 +475,19 @@ int main()
 		// gicp
 		// GeneralizedIterativeClosestPoint<CloudData, CloudData> pcl_gicp;
 		//pcl_gicp.setTransformationEpsilon(0.01);
-		//pcl_gicp.setMaximumIterations(35);
+		//pcl_gicp.setMaximumIterations(50);
 		
 		// ndt
-		pcl_ndt.setResolution(target_tree_level_res[i] * 10);     //ע��ֱ���
-		//pcl_ndt.setNumThreads(8);
+		//pcl_ndt.setResolution(target_tree_level_res[i] * 4);     //ע��ֱ���
 		//pcl_ndt.setResolution(3.0);
-		pcl_ndt.setMaximumIterations(70);
-		pcl_ndt.setTransformationEpsilon(0.005);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
+		//pcl_ndt.setMaximumIterations(70);
+		//pcl_ndt.setTransformationEpsilon(0.005);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
 
 		//vgicp
 		//vgicp.setResolution(2.0);     //ע��ֱ���
-		//vgicp.setResolution(target_tree_level_res[i]*4);
-		//vgicp.setNumThreads(8);
-		//vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
+		vgicp.setResolution(target_tree_level_res[i]*4);
+		vgicp.setNumThreads(8);
+		vgicp.setTransformationEpsilon(0.001);// *target_tree_level_res[i]);     //������������趨��С����ֵ��
 		//vgicp.setRotationEpsilon(0.001);
 		//vgicp.setNeighborSearchMethod(fast_gicp::NeighborSearchMethod::DIRECT7);
 
@@ -497,7 +496,7 @@ int main()
 		//if (i == 6) trans_iter = init_guess;  //��һ�ν�������һ����ʼλ�˹���
 		
 		
-		pair<double, double> reg_this_st = pcl_align(pcl_ndt, source_temp, target_temp, trans_iter, i);
+		pair<double, double> reg_this_st = pcl_align(vgicp, source_temp, target_temp, trans_iter, i);
 		//reg_this_st = pcl_align(pcl_ndt, source_temp, target_temp, trans_iter);
 		//reg_this_st = pcl_align(svgicp, source_temp, target_temp, trans_iter);
 

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(octree_registration)
 
+set(CMAKE_CXX_STANDARD 17)
+
 add_definitions(-w -Wunknown-pragmas -Wunused-function -Wdeprecated-declarations)
 
 ############# DEPENDENCIES ####################
@@ -41,8 +43,8 @@ target_link_libraries(octreeTest ${PCL_LIBRARIES} )
 add_executable(singleTest Octree/SingleTest_main.cpp ${ALL_SRCS})
 target_link_libraries(singleTest ${PCL_LIBRARIES} )
 
-add_executable(kitti_btop Octree/kitti_bin_to_pcd.cpp ${ALL_SRCS})
-target_link_libraries(kitti_btop ${PCL_LIBRARIES} )
+# add_executable(kitti_btop Octree/kitti_bin_to_pcd.cpp ${ALL_SRCS})
+# target_link_libraries(kitti_btop ${PCL_LIBRARIES} )
 
 add_executable(basic_filter Basic_process/filter.cpp)
 target_link_libraries(basic_filter ${PCL_LIBRARIES})
