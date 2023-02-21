@@ -2,6 +2,10 @@ set(SUBSYS_NAME filters)
 set(SUBSYS_DESC "Point cloud filters library")
 set(SUBSYS_DEPS common sample_consensus search kdtree octree features)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0")
+
+
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})

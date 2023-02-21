@@ -1,0 +1,26 @@
+{
+    "configurations": [
+            {
+                "name": "g++ -生成和调试活动文件",
+                "type": "cppdbg",
+                "request": "launch",
+                "program": "${workspaceFolder}/build/filterTest", //运行可执行文件，此处为可执行文件的路径，包括文件名字,${fileBasenameNoExtension}即为所生成可执行文件的名字,&{workspaceFolder}为.vscode路径；
+                 //"program": "${command:cmake.launchTargetPath}", //通过cmake tools解析得到要运行可执行程序的绝对路径包括文件名字，该类型的路径设置适用于cmake tool生成可执行程序，(camketool是vscode扩展库中的插件，它的执行和json文件执行是不同的)，目前用不上
+                "args": [],
+                "stopAtEntry": false,
+                "cwd": "${workspaceFolder}", //调试时的工作目录，设置调试器启动的应用程序的工作目录，这里的路径不是要调试的可执行文件的绝对路径，与task.json的cwd路径不一样，这里可以为所运行的程序main.cpp的绝对路径或者.vscode所在的目录(绝对路径)，不包括文件名字，一般用所运行程序的绝对路径即可，即${fileDirname}，
+                // "cwd": "${workspaceFolder}",   
+                "environment": [], //目前测试不改变环境，也可以进行编译运行和调试，此处有待深究
+                "externalConsole": false, //控制是否显示在新的终端
+                // "externalConsole": true,
+                "MIMode": "gdb",
+                "setupCommands": [
+                    {
+                        "description": "为 gdb 启用整齐打印",
+                        "text": "-enable-pretty-printing",
+                        "ignoreFailures": true
+                    }
+                ]
+            }
+        ]
+    }
