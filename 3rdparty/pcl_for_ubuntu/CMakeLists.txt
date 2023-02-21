@@ -72,12 +72,16 @@ set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
 # Note: CMake automatically defines one for GNUCXX, nothing to do in this case.
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(CMAKE_COMPILER_IS_CLANG 1)
+  MESSAGE("COMPILER = CLAMG")
 elseif(__COMPILER_PATHSCALE)
   set(CMAKE_COMPILER_IS_PATHSCALE 1)
+  MESSAGE("COMPILER = PATHSCALE")
 elseif(MSVC)
   set(CMAKE_COMPILER_IS_MSVC 1)
+  MESSAGE("COMPILER = MSVC")
 elseif(MINGW)
   set(CMAKE_COMPILER_IS_MINGW 1)
+  MESSAGE("COMPILER = MINGW")
 endif()
 
 # Create a variable with expected default CXX flags
@@ -112,9 +116,10 @@ endif()
 
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
+  MESSAGE("COMPILER = GNUCXX")
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi=11")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi=11 -g -O0")
     else()
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi")
     endif()
@@ -140,6 +145,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     endif()
   endif()
 endif()
+
+message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES ${SSE_DEFINITIONS}")
