@@ -28,5 +28,6 @@ considered as outliers and trimmed from the dataset.
   - \ref search "search"
   - \ref kdtree "kdtree"
   - \ref octree "octree"
+  - \ref features "features"
 
 */

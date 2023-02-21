@@ -48,3 +48,6 @@ target_link_libraries(singleTest ${PCL_LIBRARIES} )
 
 add_executable(basic_filter Basic_process/filter.cpp)
 target_link_libraries(basic_filter ${PCL_LIBRARIES})
+
+add_executable(filterTest comb_filter/filter_test.cpp ${ALL_SRCS})
+target_link_libraries(filterTest ${PCL_LIBRARIES} )

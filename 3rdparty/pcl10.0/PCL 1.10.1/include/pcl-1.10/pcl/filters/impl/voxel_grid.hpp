@@ -38,6 +38,7 @@
 #ifndef PCL_FILTERS_IMPL_VOXEL_GRID_H_
 #define PCL_FILTERS_IMPL_VOXEL_GRID_H_
 
+#include <iostream>
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
@@ -354,9 +355,9 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   while (index < index_vector.size ()) 
   {
     unsigned int i = index + 1;
-    while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx) 
+    while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx) //如果是重复点，跳过
       ++i;
-    if (i - index >= min_points_per_voxel_)
+    if (i - index >= min_points_per_voxel_)//如果一个体素内可以存放重复点，而且已经满足了构成一个体素所需的最少的点的数量，就可以考虑往对应体素中添加点
     {
       ++total;
       first_and_last_indices_vector.emplace_back(index, i);
@@ -365,7 +366,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   }
 
   // Fourth pass: compute centroids, insert them into their final position
-  output.points.resize (total);
+  //output.points.resize (total);
   if (save_leaf_layout_)
   {
     try
@@ -406,23 +407,93 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     //Limit downsampling to coords
     if (!downsample_all_data_)
     {
-      Eigen::Vector4f centroid (Eigen::Vector4f::Zero ());
+      if (remain_feature_ && (last_index - first_index)>=5)
+      {
+        // 提取保留存在的特征点
+        if (feature_type_ = FeatureFilter::NormalSpace)
+        {
+          pcl::NormalSpaceSampling<PointT, pcl::Normal> nss;
+          nss.setSeed(200);
+          //Obtain voxel points
+          PointCloudPtr voxel_points_(new PointCloud());
+          for (unsigned int li = first_index; li < last_index; ++li)
+            voxel_points_->points.push_back(input_->points[index_vector[li].cloud_point_index]);
+          //Compute normals
+          typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>());
+          PointCloudNormal::Ptr normals(new PointCloudNormal());
+          pcl::NormalEstimation<PointT, pcl::Normal> ne;
+          ne.setInputCloud(voxel_points_);
+          ne.setSearchMethod(tree);
+          ne.compute(*normals);
+          //NormalSample
+          nss.setInputCloud(voxel_points_);
+          nss.setNormals(normals);
+          PointCloudPtr sampled(new PointCloud());
+          nss.filter(*sampled);
+          std::cout <<"voxel: "<<index<< " before: "<<voxel_points_->points.size()<<" after: "<<sampled->points.size()<<std::endl;
+          for (auto& p:(sampled->points))
+          {
+            output.points.push_back(p);
+          }
+        }
 
-      for (unsigned int li = first_index; li < last_index; ++li)
+      } else {
+        Eigen::Vector4f centroid (Eigen::Vector4f::Zero ());
+
+        for (unsigned int li = first_index; li < last_index; ++li)
         centroid += input_->points[index_vector[li].cloud_point_index].getVector4fMap ();
 
-      centroid /= static_cast<float> (last_index - first_index);
-      output.points[index].getVector4fMap () = centroid;
+        centroid /= static_cast<float> (last_index - first_index);
+        PointT p_;
+        p_.x = centroid[0];
+        p_.y = centroid[1];
+        p_.z = centroid[2];
+        output.points.push_back(p_);
+      }
+
     }
     else
     {
-      CentroidPoint<PointT> centroid;
+      if (remain_feature_ && (last_index - first_index)>=5)
+      {
+        // 提取保留存在的特征点
+        if (feature_type_ = FeatureFilter::NormalSpace)
+        {
+          pcl::NormalSpaceSampling<PointT, pcl::Normal> nss;
+          nss.setSeed(200);
+          //Obtain voxel points
+          PointCloudPtr voxel_points_(new PointCloud());
+          for (unsigned int li = first_index; li < last_index; ++li)
+            voxel_points_->points.push_back(input_->points[index_vector[li].cloud_point_index]);
+          //Compute normals
+          typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>());
+          PointCloudNormal::Ptr normals(new PointCloudNormal());
+          pcl::NormalEstimation<PointT, pcl::Normal> ne;
+          ne.setInputCloud(voxel_points_);
+          ne.setSearchMethod(tree);
+          ne.compute(*normals);
+          //NormalSample
+          nss.setInputCloud(voxel_points_);
+          nss.setNormals(normals);
+          PointCloudPtr sampled(new PointCloud());
+          nss.filter(*sampled);
+          std::cout <<"voxel: "<<index<< "before: "<<voxel_points_->points.size()<<" after: "<<sampled->points.size()<<std::endl;
+          for (auto& p:(sampled->points))
+          {
+            output.points.push_back(p);
+          }
+        }
 
-      // fill in the accumulator with leaf points
-      for (unsigned int li = first_index; li < last_index; ++li)
-        centroid.add (input_->points[index_vector[li].cloud_point_index]);  
+      } else {
+        CentroidPoint<PointT> centroid;
 
-      centroid.get (output.points[index]);
+        // fill in the accumulator with leaf points
+        for (unsigned int li = first_index; li < last_index; ++li)
+          centroid.add (input_->points[index_vector[li].cloud_point_index]);  
+        PointT p_;
+        centroid.get (p_);
+        output.points.push_back(p_);
+      }
     }
      
     ++index;
