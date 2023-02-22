@@ -872,6 +872,6 @@ namespace pcl
   };
 }
 
-#ifdef PCL_NO_PRECOMPILE
-#include "voxel_grid_feature.hpp"
-#endif
+//#ifdef PCL_NO_PRECOMPILE
+//#include "voxel_grid_feature.hpp"
+//#endif

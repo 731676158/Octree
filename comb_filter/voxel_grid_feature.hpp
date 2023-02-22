@@ -407,10 +407,10 @@ pcl::VoxelGridFeature<PointT>::applyFilter (PointCloud &output)
     //Limit downsampling to coords
     if (!downsample_all_data_)
     {
-      if (remain_feature_ && (last_index - first_index)>=5)
+      if (remain_feature_ && (last_index - first_index)>=10)
       {
         // 提取保留存在的特征点
-        if (feature_type_ = FeatureFilter::NormalSpace)
+        if (feature_type_ == FeatureFilter::NormalSpace)
         {
           pcl::NormalSpaceSampling<PointT, pcl::Normal> nss;
           nss.setSeed(200);
@@ -424,6 +424,7 @@ pcl::VoxelGridFeature<PointT>::applyFilter (PointCloud &output)
           pcl::NormalEstimation<PointT, pcl::Normal> ne;
           ne.setInputCloud(voxel_points_);
           ne.setSearchMethod(tree);
+          ne.setRadiusSearch(leaf_size_.maxCoeff() / 2);
           ne.compute(*normals);
           //NormalSample
           nss.setInputCloud(voxel_points_);
@@ -454,10 +455,10 @@ pcl::VoxelGridFeature<PointT>::applyFilter (PointCloud &output)
     }
     else
     {
-      if (remain_feature_ && (last_index - first_index)>=5)
+      if (remain_feature_ && (last_index - first_index)>=10)
       {
         // 提取保留存在的特征点
-        if (feature_type_ = FeatureFilter::NormalSpace)
+        if (feature_type_ == FeatureFilter::NormalSpace)
         {
           pcl::NormalSpaceSampling<PointT, pcl::Normal> nss;
           nss.setSeed(200);
@@ -471,6 +472,7 @@ pcl::VoxelGridFeature<PointT>::applyFilter (PointCloud &output)
           pcl::NormalEstimation<PointT, pcl::Normal> ne;
           ne.setInputCloud(voxel_points_);
           ne.setSearchMethod(tree);
+          ne.setRadiusSearch(leaf_size_.maxCoeff() / 2);
           ne.compute(*normals);
           //NormalSample
           nss.setInputCloud(voxel_points_);
@@ -501,8 +503,8 @@ pcl::VoxelGridFeature<PointT>::applyFilter (PointCloud &output)
   output.width = static_cast<std::uint32_t> (output.points.size ());
 }
 
-#define PCL_INSTANTIATE_VoxelGridFeature(T) template class PCL_EXPORTS pcl::VoxelGridFeature<T>;
-#define PCL_INSTANTIATE_getMinMax3D(T) template PCL_EXPORTS void pcl::getMinMax3D<T> (const pcl::PointCloud<T>::ConstPtr &, const std::string &, float, float, Eigen::Vector4f &, Eigen::Vector4f &, bool);
+//#define PCL_INSTANTIATE_VoxelGridFeature(T) template class PCL_EXPORTS pcl::VoxelGridFeature<T>;
+//#define PCL_INSTANTIATE_getMinMax3D(T) template PCL_EXPORTS void pcl::getMinMax3D<T> (const pcl::PointCloud<T>::ConstPtr &, const std::string &, float, float, Eigen::Vector4f &, Eigen::Vector4f &, bool);
 
 #endif    // PCL_FILTERS_IMPL_VOXEL_GRID_FEATURE_H_
 
