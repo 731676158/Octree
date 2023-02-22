@@ -35,14 +35,14 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_VOXEL_GRID_H_
-#define PCL_FILTERS_IMPL_VOXEL_GRID_H_
+#ifndef PCL_FILTERS_IMPL_VOXEL_GRID_FEATURE_H_
+#define PCL_FILTERS_IMPL_VOXEL_GRID_FEATURE_H_
 
 #include <iostream>
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
-#include "voxel_grid.h"
+#include "voxel_grid_feature.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -212,7 +212,7 @@ struct cloud_point_index_idx
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
+pcl::VoxelGridFeature<PointT>::applyFilter (PointCloud &output)
 {
   // Has the input dataset been set already?
   if (!input_)
@@ -383,12 +383,12 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     }
     catch (std::bad_alloc&)
     {
-      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
+      throw PCLException("VoxelGridFeature bin size is too low; impossible to allocate memory for layout", 
         "voxel_grid.hpp", "applyFilter");	
     }
     catch (std::length_error&)
     {
-      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
+      throw PCLException("VoxelGridFeature bin size is too low; impossible to allocate memory for layout", 
         "voxel_grid.hpp", "applyFilter");	
     }
   }
@@ -501,8 +501,8 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   output.width = static_cast<std::uint32_t> (output.points.size ());
 }
 
-#define PCL_INSTANTIATE_VoxelGrid(T) template class PCL_EXPORTS pcl::VoxelGrid<T>;
+#define PCL_INSTANTIATE_VoxelGridFeature(T) template class PCL_EXPORTS pcl::VoxelGridFeature<T>;
 #define PCL_INSTANTIATE_getMinMax3D(T) template PCL_EXPORTS void pcl::getMinMax3D<T> (const pcl::PointCloud<T>::ConstPtr &, const std::string &, float, float, Eigen::Vector4f &, Eigen::Vector4f &, bool);
 
-#endif    // PCL_FILTERS_IMPL_VOXEL_GRID_H_
+#endif    // PCL_FILTERS_IMPL_VOXEL_GRID_FEATURE_H_
 

@@ -8,7 +8,7 @@
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include "voxel_grid.h"
+#include "voxel_grid_feature.h"
 #include <pcl/visualization/pcl_visualizer.h>
 
 using namespace std;
@@ -46,7 +46,7 @@ void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<Po
 //���ؽ�����
 void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointXYZ>::Ptr& filtered, float* res, bool remain)
 {
-	VoxelGrid<PointXYZ> voxelgrid;
+	VoxelGridFeature<PointXYZ> voxelgrid;
 	voxelgrid.setLeafSize(res[0], res[1], res[2]);
 	voxelgrid.setInputCloud(cloud);
     voxelgrid.setRemainFeature(remain);

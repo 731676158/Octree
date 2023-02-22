@@ -45,6 +45,12 @@
     <ClCompile Include="octree_rec.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\comb_filter\filter_test.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\comb_filter\voxel_grid_feature.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="octree_level_voxel.h">
@@ -96,6 +102,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="octree_rec.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\comb_filter\voxel_grid_feature.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\comb_filter\voxel_grid_feature.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

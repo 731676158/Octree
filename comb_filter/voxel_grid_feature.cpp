@@ -40,7 +40,7 @@
 
 #include <iostream>
 #include <pcl/common/io.h>
-#include "voxel_grid.hpp"
+#include "voxel_grid_feature.hpp"
 
 using Array4size_t = Eigen::Array<std::size_t, 4, 1>;
 
@@ -174,7 +174,7 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
+pcl::VoxelGridFeature<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
   // If fields x/y/z are not present, we cannot downsample
   if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
@@ -413,12 +413,12 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     }
     catch (std::bad_alloc&)
     {
-      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
+      throw PCLException("VoxelGridFeature bin size is too low; impossible to allocate memory for layout", 
         "voxel_grid.cpp", "applyFilter");	
     }
     catch (std::length_error&)
     {
-      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
+      throw PCLException("VoxelGridFeature bin size is too low; impossible to allocate memory for layout", 
         "voxel_grid.cpp", "applyFilter");	
     }
   }
@@ -546,7 +546,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(getMinMax3D, PCL_XYZ_POINT_TYPES)
-PCL_INSTANTIATE(VoxelGrid, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(VoxelGridFeature, PCL_XYZ_POINT_TYPES)
 
 #endif    // PCL_NO_PRECOMPILE
 

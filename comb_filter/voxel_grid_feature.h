@@ -81,7 +81,7 @@ namespace pcl
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
   /** \brief Get the relative cell indices of the "upper half" 13 neighbors.
-    * \note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGrid
+    * \note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGridFeature
     * \ingroup filters
     */
   inline Eigen::MatrixXi
@@ -118,7 +118,7 @@ namespace pcl
   }
 
   /** \brief Get the relative cell indices of all the 26 neighbors.
-    * \note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGrid
+    * \note Useful in combination with getNeighborCentroidIndices() from \ref VoxelGridFeature
     * \ingroup filters
     */
   inline Eigen::MatrixXi
@@ -165,9 +165,9 @@ namespace pcl
                const std::string &distance_field_name, float min_distance, float max_distance,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
-  /** \brief VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
+  /** \brief VoxelGridFeature assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     *
-    * The VoxelGrid class creates a *3D voxel grid* (think about a voxel
+    * The VoxelGridFeature class creates a *3D voxel grid* (think about a voxel
     * grid as a set of tiny 3D boxes in space) over the input point cloud data.
     * Then, in each *voxel* (i.e., 3D box), all the points present will be
     * approximated (i.e., *downsampled*) with their centroid. This approach is
@@ -178,7 +178,7 @@ namespace pcl
     * \ingroup filters
     */
   template <typename PointT>
-  class VoxelGrid: public Filter<PointT>
+  class VoxelGridFeature: public Filter<PointT>
   {
     protected:
       using Filter<PointT>::filter_name_;
@@ -199,11 +199,11 @@ namespace pcl
       Covariance
     };
 
-      using Ptr = shared_ptr<VoxelGrid<PointT> >;
-      using ConstPtr = shared_ptr<const VoxelGrid<PointT> >;
+      using Ptr = shared_ptr<VoxelGridFeature<PointT> >;
+      using ConstPtr = shared_ptr<const VoxelGridFeature<PointT> >;
 
       /** \brief Empty constructor. */
-      VoxelGrid () :
+      VoxelGridFeature () :
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
         downsample_all_data_ (true),
@@ -220,11 +220,11 @@ namespace pcl
         remain_feature_(false),
         feature_type_(FeatureFilter::NormalSpace)
       {
-        filter_name_ = "VoxelGrid";
+        filter_name_ = "VoxelGridFeature";
       }
 
       /** \brief Destructor. */
-      ~VoxelGrid ()
+      ~VoxelGridFeature ()
       {
       }
 
@@ -519,9 +519,9 @@ namespace pcl
       applyFilter (PointCloud &output) override;
   };
 
-  /** \brief VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
+  /** \brief VoxelGridFeature assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     *
-    * The VoxelGrid class creates a *3D voxel grid* (think about a voxel
+    * The VoxelGridFeature class creates a *3D voxel grid* (think about a voxel
     * grid as a set of tiny 3D boxes in space) over the input point cloud data.
     * Then, in each *voxel* (i.e., 3D box), all the points present will be
     * approximated (i.e., *downsampled*) with their centroid. This approach is
@@ -532,7 +532,7 @@ namespace pcl
     * \ingroup filters
     */
   template <>
-  class PCL_EXPORTS VoxelGrid<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCloud2>
+  class PCL_EXPORTS VoxelGridFeature<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCloud2>
   {
     using Filter<pcl::PCLPointCloud2>::filter_name_;
     using Filter<pcl::PCLPointCloud2>::getClassName;
@@ -543,7 +543,7 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      VoxelGrid () :
+      VoxelGridFeature () :
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Array4f::Zero ()),
         downsample_all_data_ (true),
@@ -558,11 +558,11 @@ namespace pcl
         filter_limit_negative_ (false),
         min_points_per_voxel_ (0)
       {
-        filter_name_ = "VoxelGrid";
+        filter_name_ = "VoxelGridFeature";
       }
 
       /** \brief Destructor. */
-      ~VoxelGrid ()
+      ~VoxelGridFeature ()
       {
       }
 
@@ -873,5 +873,5 @@ namespace pcl
 }
 
 #ifdef PCL_NO_PRECOMPILE
-#include <pcl/filters/impl/voxel_grid.hpp>
+#include "voxel_grid_feature.hpp"
 #endif

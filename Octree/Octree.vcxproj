@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\comb_filter\filter_test.cpp" />
+    <ClCompile Include="..\comb_filter\voxel_grid_feature.cpp" />
     <ClCompile Include="Comparision.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -159,11 +161,15 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="octreeTest.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="octree_rec.cpp" />
+    <ClCompile Include="octree_rec.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\comb_filter\voxel_grid_feature.h" />
+    <ClInclude Include="..\comb_filter\voxel_grid_feature.hpp" />
     <ClInclude Include="fast_gicp.hpp" />
     <ClInclude Include="fast_gicp_impl.hpp" />
     <ClInclude Include="fast_svgicp.hpp" />
@@ -176,8 +182,12 @@
     <ClInclude Include="lsq_registration.hpp" />
     <ClInclude Include="lsq_registration_impl.hpp" />
     <ClInclude Include="octree_level_voxel.h" />
-    <ClInclude Include="octree_rec.hpp" />
-    <ClInclude Include="octree_rec_impl.hpp" />
+    <ClInclude Include="octree_rec.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="octree_rec_impl.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="octree_recur_iter.h" />
     <ClInclude Include="plot.h" />
     <ClInclude Include="so3\so3.hpp" />
