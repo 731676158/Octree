@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(octree_registration)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3 -O0 -gdwarf-2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3 -O0 -gdwarf-2")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE DEBUG)
 
@@ -23,12 +23,16 @@ if(OPENMP_FOUND)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
+message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+
 ################## Include and libraries #####################
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Octree)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/comb_filter)
 include_directories("/usr/include/python3.8")
 
 file(GLOB_RECURSE ALL_SRCS "Octree/*.cpp")
 file(GLOB_RECURSE MAIN_SRCS "Octree/*main.cpp")
+list(APPEND ALL_SRCS "comb_filter/voxel_grid.cpp")
 list(REMOVE_ITEM ALL_SRCS ${MAIN_SRCS})
 list(REMOVE_ITEM ALL_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/Octree/kitti_bin_to_pcd.cpp)
 

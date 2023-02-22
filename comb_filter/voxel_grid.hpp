@@ -42,7 +42,7 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
-#include <pcl/filters/voxel_grid.h>
+#include "voxel_grid.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -366,7 +366,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   }
 
   // Fourth pass: compute centroids, insert them into their final position
-  output.points.resize (total);
+  //output.points.resize (total);
   if (save_leaf_layout_)
   {
     try
@@ -407,22 +407,93 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     //Limit downsampling to coords
     if (!downsample_all_data_)
     {
+      if (remain_feature_ && (last_index - first_index)>=5)
+      {
+        // 提取保留存在的特征点
+        if (feature_type_ = FeatureFilter::NormalSpace)
+        {
+          pcl::NormalSpaceSampling<PointT, pcl::Normal> nss;
+          nss.setSeed(200);
+          //Obtain voxel points
+          PointCloudPtr voxel_points_(new PointCloud());
+          for (unsigned int li = first_index; li < last_index; ++li)
+            voxel_points_->points.push_back(input_->points[index_vector[li].cloud_point_index]);
+          //Compute normals
+          typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>());
+          PointCloudNormal::Ptr normals(new PointCloudNormal());
+          pcl::NormalEstimation<PointT, pcl::Normal> ne;
+          ne.setInputCloud(voxel_points_);
+          ne.setSearchMethod(tree);
+          ne.compute(*normals);
+          //NormalSample
+          nss.setInputCloud(voxel_points_);
+          nss.setNormals(normals);
+          PointCloudPtr sampled(new PointCloud());
+          nss.filter(*sampled);
+          std::cout <<"voxel: "<<index<< " before: "<<voxel_points_->points.size()<<" after: "<<sampled->points.size()<<std::endl;
+          for (auto& p:(sampled->points))
+          {
+            output.points.push_back(p);
+          }
+        }
+
+      } else {
         Eigen::Vector4f centroid (Eigen::Vector4f::Zero ());
 
         for (unsigned int li = first_index; li < last_index; ++li)
         centroid += input_->points[index_vector[li].cloud_point_index].getVector4fMap ();
 
         centroid /= static_cast<float> (last_index - first_index);
-        output.points[index].getVector4fMap () = centroid;
+        PointT p_;
+        p_.x = centroid[0];
+        p_.y = centroid[1];
+        p_.z = centroid[2];
+        output.points.push_back(p_);
+      }
+
     }
     else
     {
+      if (remain_feature_ && (last_index - first_index)>=5)
+      {
+        // 提取保留存在的特征点
+        if (feature_type_ = FeatureFilter::NormalSpace)
+        {
+          pcl::NormalSpaceSampling<PointT, pcl::Normal> nss;
+          nss.setSeed(200);
+          //Obtain voxel points
+          PointCloudPtr voxel_points_(new PointCloud());
+          for (unsigned int li = first_index; li < last_index; ++li)
+            voxel_points_->points.push_back(input_->points[index_vector[li].cloud_point_index]);
+          //Compute normals
+          typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>());
+          PointCloudNormal::Ptr normals(new PointCloudNormal());
+          pcl::NormalEstimation<PointT, pcl::Normal> ne;
+          ne.setInputCloud(voxel_points_);
+          ne.setSearchMethod(tree);
+          ne.compute(*normals);
+          //NormalSample
+          nss.setInputCloud(voxel_points_);
+          nss.setNormals(normals);
+          PointCloudPtr sampled(new PointCloud());
+          nss.filter(*sampled);
+          std::cout <<"voxel: "<<index<< "before: "<<voxel_points_->points.size()<<" after: "<<sampled->points.size()<<std::endl;
+          for (auto& p:(sampled->points))
+          {
+            output.points.push_back(p);
+          }
+        }
+
+      } else {
         CentroidPoint<PointT> centroid;
 
         // fill in the accumulator with leaf points
         for (unsigned int li = first_index; li < last_index; ++li)
           centroid.add (input_->points[index_vector[li].cloud_point_index]);  
-        centroid.get (output.points[index]);
+        PointT p_;
+        centroid.get (p_);
+        output.points.push_back(p_);
+      }
     }
      
     ++index;

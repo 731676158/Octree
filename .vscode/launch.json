@@ -20,7 +20,10 @@
                         "text": "-enable-pretty-printing",
                         "ignoreFailures": true
                     }
-                ]
+                ],
+                "logging": {
+                        "engineLogging": true
+                }
             }
         ]
     }

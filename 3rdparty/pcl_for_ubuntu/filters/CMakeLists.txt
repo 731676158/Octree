@@ -1,6 +1,6 @@
 set(SUBSYS_NAME filters)
 set(SUBSYS_DESC "Point cloud filters library")
-set(SUBSYS_DEPS common sample_consensus search kdtree octree features)
+set(SUBSYS_DEPS common sample_consensus search kdtree octree)
 
 
 set(build TRUE)

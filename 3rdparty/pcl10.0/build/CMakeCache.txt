@@ -76,7 +76,7 @@ CMAKE_CONFIGURATION_TYPES:STRING=Debug;Release
 CMAKE_CXX_FLAGS:STRING=/DWIN32 /D_WINDOWS /W3 /GR /EHsc
 
 //Flags used by the CXX compiler during DEBUG builds.
-CMAKE_CXX_FLAGS_DEBUG:STRING=/MDd /Zi /Ob0 /Od /RTC1
+CMAKE_CXX_FLAGS_DEBUG:STRING=/MDd /Zi /Ob0 /O0 /RTC1 /g
 
 //Flags used by the C++ compiler during maintainer builds.
 CMAKE_CXX_FLAGS_MAINTAINER:STRING=-pedantic -Wno-variadic-macros -Weffc++ -Wno-long-long

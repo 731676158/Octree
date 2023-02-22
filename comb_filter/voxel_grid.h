@@ -43,6 +43,10 @@
 #include <pcl/filters/filter.h>
 #include <map>
 
+#include <pcl/features/normal_3d.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/filters/normal_space.h>
+
 namespace pcl
 {
   /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
@@ -189,6 +193,12 @@ namespace pcl
 
     public:
 
+    enum FeatureFilter{
+      NormalSpace,
+      StatisiticalOutlier,
+      Covariance
+    };
+
       using Ptr = shared_ptr<VoxelGrid<PointT> >;
       using ConstPtr = shared_ptr<const VoxelGrid<PointT> >;
 
@@ -206,7 +216,9 @@ namespace pcl
         filter_limit_min_ (-FLT_MAX),
         filter_limit_max_ (FLT_MAX),
         filter_limit_negative_ (false),
-        min_points_per_voxel_ (0)
+        min_points_per_voxel_ (0),
+        remain_feature_(false),
+        feature_type_(FeatureFilter::NormalSpace)
       {
         filter_name_ = "VoxelGrid";
       }
@@ -229,6 +241,12 @@ namespace pcl
         // Use multiplications instead of divisions
         inverse_leaf_size_ = Eigen::Array4f::Ones () / leaf_size_.array ();
       }
+
+      /** \brief Set to true if features inside every voxel should be remained.
+        */
+      void setRemainFeature(bool remain_feature) {remain_feature_ = remain_feature;}
+
+      void setRemainType(FeatureFilter str){feature_type_ = str;}
 
       /** \brief Set the voxel grid leaf size.
         * \param[in] lx the leaf size for X
@@ -485,6 +503,12 @@ namespace pcl
 
       /** \brief Minimum number of points per voxel for the centroid to be computed */
       unsigned int min_points_per_voxel_;
+
+      /** \brief Set to true if features inside a voxel should be remained after filter.
+        */
+      bool remain_feature_;
+
+      FeatureFilter feature_type_;
 
       using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
