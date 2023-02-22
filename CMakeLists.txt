@@ -32,7 +32,7 @@ include_directories("/usr/include/python3.8")
 
 file(GLOB_RECURSE ALL_SRCS "Octree/*.cpp")
 file(GLOB_RECURSE MAIN_SRCS "Octree/*main.cpp")
-list(APPEND ALL_SRCS "comb_filter/voxel_grid.cpp")
+list(APPEND ALL_SRCS "comb_filter/voxel_grid_feature.cpp")
 list(REMOVE_ITEM ALL_SRCS ${MAIN_SRCS})
 list(REMOVE_ITEM ALL_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/Octree/kitti_bin_to_pcd.cpp)
 

@@ -404,6 +404,8 @@ pcl::VoxelGridFeature<PointT>::applyFilter (PointCloud &output)
     if (save_leaf_layout_)
       leaf_layout_[index_vector[first_index].idx] = index;
 
+     const float sample_ratio_ = 0.5f;
+
     //Limit downsampling to coords
     if (!downsample_all_data_)
     {
@@ -429,6 +431,7 @@ pcl::VoxelGridFeature<PointT>::applyFilter (PointCloud &output)
           //NormalSample
           nss.setInputCloud(voxel_points_);
           nss.setNormals(normals);
+          nss.setSample(voxel_points_->points.size()*sample_ratio_);
           PointCloudPtr sampled(new PointCloud());
           nss.filter(*sampled);
           std::cout <<"voxel: "<<index<< " before: "<<voxel_points_->points.size()<<" after: "<<sampled->points.size()<<std::endl;
@@ -477,6 +480,7 @@ pcl::VoxelGridFeature<PointT>::applyFilter (PointCloud &output)
           //NormalSample
           nss.setInputCloud(voxel_points_);
           nss.setNormals(normals);
+          nss.setSample(voxel_points_->points.size()*sample_ratio_);
           PointCloudPtr sampled(new PointCloud());
           nss.filter(*sampled);
           std::cout <<"voxel: "<<index<< "before: "<<voxel_points_->points.size()<<" after: "<<sampled->points.size()<<std::endl;
