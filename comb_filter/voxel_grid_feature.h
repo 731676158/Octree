@@ -218,7 +218,8 @@ namespace pcl
         filter_limit_negative_ (false),
         min_points_per_voxel_ (0),
         remain_feature_(false),
-        feature_type_(FeatureFilter::NormalSpace)
+        feature_type_(FeatureFilter::NormalSpace),
+        sample_ratio_(0.3f)
       {
         filter_name_ = "VoxelGridFeature";
       }
@@ -247,6 +248,8 @@ namespace pcl
       void setRemainFeature(bool remain_feature) {remain_feature_ = remain_feature;}
 
       void setRemainType(FeatureFilter str){feature_type_ = str;}
+
+      void setSampleRatio(float sr){sample_ratio_=sr;}
 
       /** \brief Set the voxel grid leaf size.
         * \param[in] lx the leaf size for X
@@ -509,6 +512,8 @@ namespace pcl
       bool remain_feature_;
 
       FeatureFilter feature_type_;
+
+      float sample_ratio_;
 
       using FieldList = typename pcl::traits::fieldList<PointT>::type;
 

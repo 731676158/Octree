@@ -31,14 +31,26 @@ void CloudMessages(const PointCloud<PointXYZ>::ConstPtr& cloud) {
 }
 
 
-void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<PointXYZ>::ConstPtr& target)
+void RegViewer(const PointCloud<PointXYZ>::ConstPtr& origin, const PointCloud<PointXYZ>::ConstPtr& featured)
 {
-	std::shared_ptr<PCLVisualizer> viewer(new PCLVisualizer("source(red),target(green)"));
+	std::shared_ptr<PCLVisualizer> viewer(new PCLVisualizer("origin(red),featured(green)"));
 	viewer->setBackgroundColor(255, 255, 255);
-	PointCloudColorHandlerCustom<PointXYZ> source_cloud_handler(source, 255, 0, 0);
-	PointCloudColorHandlerCustom<PointXYZ> target_cloud_handler(target, 0, 255, 0);
-	viewer->addPointCloud<PointXYZ>(source, source_cloud_handler, "source");
-	viewer->addPointCloud<PointXYZ>(target, target_cloud_handler, "target");
+	PointCloudColorHandlerCustom<PointXYZ> origin_cloud_handler(origin, 255, 0, 0);
+	PointCloudColorHandlerCustom<PointXYZ> featured_cloud_handler(featured, 0, 255, 0);
+	viewer->addPointCloud<PointXYZ>(origin, origin_cloud_handler, "origin");
+	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "origin");
+	viewer->addPointCloud<PointXYZ>(featured, featured_cloud_handler, "featured");
+	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "featured");
+	viewer->spin();
+}
+
+void RegViewer(const PointCloud<PointXYZ>::ConstPtr& featured)
+{
+	std::shared_ptr<PCLVisualizer> viewer(new PCLVisualizer("featured(green)"));
+	viewer->setBackgroundColor(255, 255, 255);
+	PointCloudColorHandlerCustom<PointXYZ> featured_cloud_handler(featured, 255, 0, 0);
+	viewer->addPointCloud<PointXYZ>(featured, featured_cloud_handler, "featured");
+	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "featured");
 	viewer->spin();
 }
 
@@ -50,6 +62,7 @@ void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointX
 	voxelgrid.setLeafSize(res[0], res[1], res[2]);
 	voxelgrid.setInputCloud(cloud);
     voxelgrid.setRemainFeature(remain);
+	voxelgrid.setSampleRatio(0.1f);
 	voxelgrid.filter(*filtered);
 }
 
@@ -82,7 +95,7 @@ int main()
 	cout << "---source cloud messages: " << endl;
 	CloudMessages(source_pre);
 
-    float res[3] = {1.0, 1.0, 1.0};
+    float res[3] = {0.5, 0.5, 0.5};
     PointCloud<PointXYZ>::Ptr filtered_remained(new PointCloud<PointXYZ>());
 	voxel_sample(source_pre, filtered_remained, res, true);
 
@@ -94,5 +107,7 @@ int main()
 	CloudMessages(filtered_remained);
     cout << "---plainful voxelized: " << endl;
     CloudMessages(filtered);
+
+	RegViewer(filtered_remained);
 
 }
