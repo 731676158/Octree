@@ -55,7 +55,6 @@ void RegViewer(const PointCloud<PointXYZ>::ConstPtr& featured)
 }
 
 
-//���ؽ�����
 void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointXYZ>::Ptr& filtered, float* res, bool remain)
 {
 	VoxelGridFeature<PointXYZ> voxelgrid;
