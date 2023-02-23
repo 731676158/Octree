@@ -4,7 +4,7 @@
                 "name": "g++ -生成和调试活动文件",
                 "type": "cppdbg",
                 "request": "launch",
-                "program": "${workspaceFolder}/build/filterTest", //运行可执行文件，此处为可执行文件的路径，包括文件名字,${fileBasenameNoExtension}即为所生成可执行文件的名字,&{workspaceFolder}为.vscode路径；
+                "program": "${workspaceFolder}/build/filterRegTest", //运行可执行文件，此处为可执行文件的路径，包括文件名字,${fileBasenameNoExtension}即为所生成可执行文件的名字,&{workspaceFolder}为.vscode路径；
                  //"program": "${command:cmake.launchTargetPath}", //通过cmake tools解析得到要运行可执行程序的绝对路径包括文件名字，该类型的路径设置适用于cmake tool生成可执行程序，(camketool是vscode扩展库中的插件，它的执行和json文件执行是不同的)，目前用不上
                 "args": [],
                 "stopAtEntry": false,

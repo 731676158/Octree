@@ -433,14 +433,14 @@ pcl::VoxelGridFeature<PointT>::applyFilter (PointCloud &output)
           nss.setSample(voxel_points_->points.size()*sample_ratio_);
           PointCloudPtr sampled(new PointCloud());
           nss.filter(*sampled);
-          //std::cout <<"voxel: "<<index<< " before: "<<voxel_points_->points.size()<<" after: "<<sampled->points.size()<<std::endl;
+          // if (sampled->points.size() > 1) {std::cout <<"voxel: "<<index<< " before: "<<voxel_points_->points.size()<<" after: "<<sampled->points.size()<<std::endl;}
           for (auto& p:(sampled->points))
           {
             output.points.push_back(p);
           }
         }
 
-      } else if ((last_index - first_index)<=2){}
+      } else if (remain_feature_ && (last_index - first_index)<=1){}
       else {
         Eigen::Vector4f centroid (Eigen::Vector4f::Zero ());
 
@@ -484,14 +484,14 @@ pcl::VoxelGridFeature<PointT>::applyFilter (PointCloud &output)
           nss.setSample(voxel_points_->points.size()*sample_ratio_);
           PointCloudPtr sampled(new PointCloud());
           nss.filter(*sampled);
-          //std::cout <<"voxel: "<<index<< "before: "<<voxel_points_->points.size()<<" after: "<<sampled->points.size()<<std::endl;
+          // if (sampled->points.size() > 1) {std::cout <<"voxel: "<<index<< " before: "<<voxel_points_->points.size()<<" after: "<<sampled->points.size()<<std::endl;}
           for (auto& p:(sampled->points))
           {
             output.points.push_back(p);
           }
         }
 
-      } else if ((last_index - first_index)<=2){}
+      } else if (remain_feature_ && (last_index - first_index)<=1){}
       else {
         CentroidPoint<PointT> centroid;
 

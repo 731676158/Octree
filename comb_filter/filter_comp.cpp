@@ -9,7 +9,7 @@
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include "voxel_grid_feature.h"
+#include <pcl/filters/voxel_grid.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 using namespace std;
@@ -55,13 +55,11 @@ void RegViewer(const PointCloud<PointXYZ>::ConstPtr& featured)
 }
 
 
-void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointXYZ>::Ptr& filtered, float* res, bool remain)
+void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointXYZ>::Ptr& filtered, float* res)
 {
-	VoxelGridFeature<PointXYZ> voxelgrid;
+	VoxelGrid<PointXYZ> voxelgrid;
 	voxelgrid.setLeafSize(res[0], res[1], res[2]);
 	voxelgrid.setInputCloud(cloud);
-    voxelgrid.setRemainFeature(remain);
-	voxelgrid.setSampleRatio(0.5f);
 	voxelgrid.filter(*filtered);
 }
 
@@ -73,8 +71,7 @@ int main()
 #if defined(_WIN32)
 	cloudfile = "C:\\files\\codes\\git\\Octree\\data\\2011_09_26_drive_0005_sync\\pcds\\0000000010.pcd";
 #elif defined(__linux__)
-	// cloudfile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000005.pcd";
-	cloudfile = "/media/jeff/PineappleJC/bag_and_pcd/pcds/pcds/test1.pcd";
+	cloudfile = "/home/jeff/codes/Octree/data/2011_09_26_drive_0005_sync/pcds/0000000005.pcd";
 #endif
 
 	PointCloud<PointXYZ>::Ptr source_pre(new PointCloud<PointXYZ>());
@@ -95,12 +92,12 @@ int main()
 	cout << "---source cloud messages: " << endl;
 	CloudMessages(source_pre);
 
-    float res[3] = {5.0, 5.0, 5.0};
+    float res[3] = {0.5, 0.5, 0.5};
     PointCloud<PointXYZ>::Ptr filtered_remained(new PointCloud<PointXYZ>());
-	voxel_sample(source_pre, filtered_remained, res, true);
-	float res1[3] = {1.5, 1.5, 1.5};
+	voxel_sample(source_pre, filtered_remained, res);
+
     PointCloud<PointXYZ>::Ptr filtered(new PointCloud<PointXYZ>());
-	voxel_sample(source_pre, filtered, res1, false);
+	voxel_sample(source_pre, filtered, res);
 
 	cout << "-------------After filtering" << endl;
 	cout << "---features remained: " << endl;
@@ -108,6 +105,6 @@ int main()
     cout << "---plainful voxelized: " << endl;
     CloudMessages(filtered);
 
-	RegViewer(filtered, filtered_remained);
+	RegViewer(filtered_remained);
 
 }

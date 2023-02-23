@@ -1,0 +1,49 @@
+-------------Before filtering
+---source cloud messages: 
+Bound for the cloud: 
+x: [-61.684, 70.078];
+y: [-79.855, 79.024];
+z: [-6.318, 2.9];
+Loaded 123389 points.
+---target cloud messages: 
+Bound for the cloud: 
+x: [-64.347, 68.529];
+y: [-79.833, 77.739];
+z: [-6.962, 2.897];
+Loaded 123398 points.
+-------------Original filtering
+---source cloud messages: 
+Bound for the cloud: 
+x: [-61.684, 70.078];
+y: [-79.855, 79.024];
+z: [-6.318, 2.9];
+Loaded 63046 points.
+---target cloud messages: 
+Bound for the cloud: 
+x: [-64.347, 68.529];
+y: [-79.833, 77.739];
+z: [-6.962, 2.897];
+Loaded 62216 points.
+-------------Featured filtering
+---source cloud messages: 
+Bound for the cloud: 
+x: [-61.4587, 70.0655];
+y: [-79.769, 77.891];
+z: [-5.416, 2.881];
+Loaded 60049 points.
+---target cloud messages: 
+Bound for the cloud: 
+x: [-64.289, 67.0755];
+y: [-79.8015, 77.662];
+z: [-6.9615, 2.8745];
+Loaded 60095 points.
+--------not sampled: ---------
+time: 114203 [msecs].
+score: 0.220885[m^2].
+--------original sampled---------
+time: 66515.5 [msecs].
+score: 0.3694[m^2].
+--------feature sampled---------
+time: 73506 [msecs].
+score: 0.257745[m^2].
+

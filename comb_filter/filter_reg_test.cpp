@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -9,7 +10,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
-#include <pcl/registration/ndt.h>
+// #include <pcl/registration/ndt.h>
 #include <pcl/registration/gicp.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
@@ -22,25 +23,9 @@ using namespace pcl::io;
 using namespace pcl::visualization;
 using namespace Eigen;
 
-#if defined(__linux__)
-extern void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointXYZ>::Ptr& filtered, float* res, bool remain);
-#else
-void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointXYZ>::Ptr& filtered, float* res, bool remain)
-{
-	VoxelGridFeature<PointXYZ> voxelgrid;
-	voxelgrid.setLeafSize(res[0], res[1], res[2]);
-	voxelgrid.setInputCloud(cloud);
-	voxelgrid.setRemainFeature(remain);
-	voxelgrid.setSampleRatio(0.1f);
-	voxelgrid.filter(*filtered);
-}
-#endif
 //#include "fast_vgicp.hpp"
 
 
-int reg_times = 0;
-
-//չʾ���ƻ�����Ϣ
 void CloudMessages(const PointCloud<PointXYZ>::ConstPtr& cloud) {
 	Eigen::Vector4f min_pt = Eigen::Vector4f::Zero();
 	Eigen::Vector4f max_pt = Eigen::Vector4f::Zero();
@@ -52,15 +37,16 @@ void CloudMessages(const PointCloud<PointXYZ>::ConstPtr& cloud) {
 	cout << "Loaded " << cloud->width * cloud->height << " points." << endl;
 }
 
-
-void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<PointXYZ>::ConstPtr& target)
+void RegViewer(const PointCloud<PointXYZ>::ConstPtr& origin, const PointCloud<PointXYZ>::ConstPtr& featured)
 {
-	std::shared_ptr<PCLVisualizer> viewer(new PCLVisualizer("source(red),target(green)"));
+	std::shared_ptr<PCLVisualizer> viewer(new PCLVisualizer("origin(red),featured(green)"));
 	viewer->setBackgroundColor(255, 255, 255);
-	PointCloudColorHandlerCustom<PointXYZ> source_cloud_handler(source, 255, 0, 0);
-	PointCloudColorHandlerCustom<PointXYZ> target_cloud_handler(target, 0, 255, 0);
-	viewer->addPointCloud<PointXYZ>(source, source_cloud_handler, "source");
-	viewer->addPointCloud<PointXYZ>(target, target_cloud_handler, "target");
+	PointCloudColorHandlerCustom<PointXYZ> origin_cloud_handler(origin, 255, 0, 0);
+	PointCloudColorHandlerCustom<PointXYZ> featured_cloud_handler(featured, 0, 255, 0);
+	viewer->addPointCloud<PointXYZ>(origin, origin_cloud_handler, "origin");
+	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "origin");
+	viewer->addPointCloud<PointXYZ>(featured, featured_cloud_handler, "featured");
+	viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "featured");
 	viewer->spin();
 }
 
@@ -75,6 +61,16 @@ void RegViewer(const PointCloud<PointXYZ>::ConstPtr& source, const PointCloud<Po
 	viewer->addPointCloud<PointXYZ>(target, target_cloud_handler, "target");
 	viewer->addPointCloud<PointXYZ>(aligned, aligned_cloud_handler, "aligned");
 	viewer->spin();
+}
+
+void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointXYZ>::Ptr& filtered, float* res, bool remain, float sample_ratio)
+{
+	VoxelGridFeature<PointXYZ> voxelgrid;
+	voxelgrid.setLeafSize(res[0], res[1], res[2]);
+	voxelgrid.setInputCloud(cloud);
+	voxelgrid.setRemainFeature(remain);
+	voxelgrid.setSampleRatio(sample_ratio);
+	voxelgrid.filter(*filtered);
 }
 
 //��׼
@@ -116,8 +112,7 @@ pair<double, double> pcl_align(string category, Registration& reg, const PointCl
 	cout << "score: " << score << "[m^2]." << endl;
 	trans = reg.getFinalTransformation();
 	//cout << "transformation:" << endl << trans << endl;
-	string aligned_name, rtime;
-	rtime = to_string(reg_times);
+	string aligned_name;
 
 	//save
 	//aligned_name = "C:\\files\\point_cloud\\codes\\prt\\lecturePrt\\TreesAndKnn\\Octree\\test_aligned" + rtime + ".pcd";
@@ -125,8 +120,6 @@ pair<double, double> pcl_align(string category, Registration& reg, const PointCl
 
 	RegViewer(source, target, aligned);
 	//RegViewer(guessed, target, aligned);
-
-	++reg_times;
 	return pair<double, double> {score, d};
 }
 
@@ -167,7 +160,7 @@ int main()
 		return -1;
 	}
 	auto t2 = high_resolution_clock::now();
-	if (loadPCDFile<PointXYZ>(targetfile, *source) == -1)
+	if (loadPCDFile<PointXYZ>(targetfile, *target) == -1)
 	{
 		PCL_ERROR("Couldn't read target file \n");
 		return -1;
@@ -185,11 +178,11 @@ int main()
 	CloudMessages(target);
 
 	float res[3] = {0.1, 0.1, 0.1};
-	voxel_sample(source, source_ori, res, true);
-	voxel_sample(target, target_ori, res, true);
-
-    voxel_sample(source, source_fea, res, false);
-	voxel_sample(target, target_fea, res, false);
+	voxel_sample(source, source_ori, res, false, 0);
+	voxel_sample(target, target_ori, res, false, 0);
+	float res1[3] = {1.0, 1.0, 1.0};
+    voxel_sample(source, source_fea, res1, true, 0.5f);
+	voxel_sample(target, target_fea, res1, true, 0.5f);
 
 	cout << "-------------Original filtering" << endl;
 	cout << "---source cloud messages: " << endl;
@@ -202,6 +195,9 @@ int main()
 	CloudMessages(source_fea);
 	cout << "---target cloud messages: " << endl;
 	CloudMessages(target_fea);
+
+	RegViewer(source_ori, source_fea);
+	RegViewer(target_ori, target_fea);
 
 	/***********************************�˲��˲���**************************************************/
 	
