@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="octreeTest.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="fast_gicp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -30,16 +24,10 @@
     <ClCompile Include="lsq_registration.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Comparision.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="graph2d.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="fast_svgicp.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="kitti_bin_to_pcd.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="octree_rec.cpp">
@@ -49,6 +37,21 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\comb_filter\voxel_grid_feature.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\comb_filter\filter_reg_test.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="octreeTest_main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleTest_main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kitti_bin_to_pcd.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

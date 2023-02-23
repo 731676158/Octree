@@ -143,27 +143,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\comb_filter\filter_test.cpp" />
-    <ClCompile Include="..\comb_filter\voxel_grid_feature.cpp" />
-    <ClCompile Include="Comparision.cpp">
+    <ClCompile Include="..\comb_filter\filter_reg_test.cpp" />
+    <ClCompile Include="..\comb_filter\filter_test.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\comb_filter\voxel_grid_feature.cpp" />
     <ClCompile Include="fast_gicp.cpp" />
     <ClCompile Include="fast_svgicp.cpp" />
     <ClCompile Include="fast_vgicp.cpp" />
     <ClCompile Include="graph2d.cpp" />
     <ClCompile Include="kitti_bin_to_pcd.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp17</LanguageStandard>
     </ClCompile>
     <ClCompile Include="lsq_registration.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="octreeTest.cpp">
+    <ClCompile Include="octreeTest_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="octree_rec.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="SingleTest_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>

@@ -14,13 +14,6 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include "voxel_grid_feature.h"
-#include "fast_vgicp.hpp"
-
-#if defined(_WIN32)
-#include "plot.h"
-#include "graph2d.h"
-#endif
-
 
 using namespace std;
 using namespace std::chrono;
@@ -29,7 +22,20 @@ using namespace pcl::io;
 using namespace pcl::visualization;
 using namespace Eigen;
 
+#if defined(__linux__)
 extern void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointXYZ>::Ptr& filtered, float* res, bool remain);
+#else
+void voxel_sample(const PointCloud<PointXYZ>::ConstPtr& cloud, PointCloud<PointXYZ>::Ptr& filtered, float* res, bool remain)
+{
+	VoxelGridFeature<PointXYZ> voxelgrid;
+	voxelgrid.setLeafSize(res[0], res[1], res[2]);
+	voxelgrid.setInputCloud(cloud);
+	voxelgrid.setRemainFeature(remain);
+	voxelgrid.setSampleRatio(0.1f);
+	voxelgrid.filter(*filtered);
+}
+#endif
+//#include "fast_vgicp.hpp"
 
 
 int reg_times = 0;
@@ -124,46 +130,6 @@ pair<double, double> pcl_align(string category, Registration& reg, const PointCl
 	return pair<double, double> {score, d};
 }
 
-#if defined(_WIN32)
-void drawRes(vector<pair<double, double>>& res)
-{
-	Graph2d::Point scr;
-	Graph2d::Point tm;
-	vector<Graph2d::Point> scrs;
-	vector<Graph2d::Point> tms;
-	double scr_min = DBL_MAX;
-	double tm_min = DBL_MAX;
-	double scr_max = DBL_MIN;
-	double tm_max = DBL_MIN;
-	for (int i = 0; i < res.size(); ++i)
-	{
-		scr.x = static_cast<double>(i);
-		tm.x = static_cast<double>(i);
-		scr.y = res[i].first;
-		tm.y = res[i].second;
-		scr_min = min(scr_min, scr.y);
-		tm_min = min(tm_min, tm.y);
-		scr_max = max(scr_max, scr.y);
-		tm_max = max(tm_max, tm.y);
-		scrs.push_back(scr);
-		tms.push_back(tm);
-	}
-
-	Graph2d::graph2d g2d_s(700, 590, { 0, scr_min}, { static_cast<double>(res.size()), scr_max});
-	g2d_s.xlabel("level");
-	g2d_s.ylabel("score");
-	g2d_s.title("Reg_score_results");
-	g2d_s.plot(scrs, RED);
-	g2d_s.waitKey();
-
-	/*Graph2d::graph2d g2d_t(700, 590, { 0, tm_min }, { static_cast<double>(res.size()), tm_max });
-	g2d_t.xlabel("level");
-	g2d_t.ylabel("time");
-	g2d_t.title("Reg_time_results");
-	g2d_t.plot(tms, RED);
-	g2d_t.waitKey();*/
-}
-#endif
 
 int main()
 {
